@@ -1,6 +1,9 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:habits/auth/authFunctions.dart';
 import 'package:habits/components/custom_appbar.dart';
 import 'package:habits/components/custom_textformfield.dart';
+import 'package:habits/screens/home_screen.dart';
 import 'package:habits/screens/register_screen.dart';
 
 import '../constants.dart';
@@ -15,13 +18,19 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  String? email;
+  String? password;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: CustomAppBar(titleText: 'habits'),
+      appBar: CustomAppBar(
+        titleText: 'habits',
+        hasLeading: false,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
@@ -63,6 +72,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelText: 'Email',
                       prefixIcon: Icon(Icons.email),
                       obscureText: false,
+                      onSaved: (val) {
+                        setState(() {
+                          email = val;
+                        });
+                      },
+                      validator: (val) {},
                     ),
                     SizedBox(
                       height: 15,
@@ -71,6 +86,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelText: 'Password',
                       prefixIcon: Icon(Icons.lock),
                       obscureText: true,
+                      onSaved: (val) {
+                        setState(() {
+                          password = val;
+                        });
+                      },
+                      validator: (val) {},
                     ),
                   ],
                 ),
@@ -87,7 +108,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       minimumSize: Size(double.infinity, 60),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      bool isSuccess =
+                          await AuthServices.signIn(email!, password!);
+                      if (isSuccess) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
+                      }
+                    }
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(

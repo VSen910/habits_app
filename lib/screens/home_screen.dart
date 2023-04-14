@@ -1,3 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:habits/components/drawer_info_tile.dart';
 import 'package:star_menu/star_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
@@ -136,12 +139,14 @@ class _HomeScreenState extends State<HomeScreen> {
     // final screenWidht = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: CustomAppBar(
-        titleText: "Palash's habits",
+        titleText: "Palash's\nhabits",
+        hasLeading: true,
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -409,6 +414,103 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {},
         child: Icon(
           Icons.add,
+        ),
+      ),
+      drawer: Drawer(
+        backgroundColor: kPrimaryColour,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'habits',
+                      style: TextStyle(
+                        fontFamily: 'antre',
+                        fontSize: 40,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      'Build better habits',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xff3f3f3f),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  DrawerInfoTile(
+                    title: 'Username',
+                    value: 'Palash',
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  DrawerInfoTile(
+                    title: 'Email',
+                    value: 'palash@bhasme.com',
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  DrawerInfoTile(
+                    title: 'Habits being tracked',
+                    value: '3',
+                  ),
+                  SizedBox(
+                    height: screenHeight * 0.3,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(width: 1, color: kPrimaryColour),
+                        ),
+                      ),
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 24.0,
+                        ),
+                        child: Text(
+                          'Sign out',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: kPrimaryColour,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
