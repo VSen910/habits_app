@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:habits/auth/authFunctions.dart';
 import 'package:habits/components/drawer_info_tile.dart';
+import 'package:habits/screens/register_screen.dart';
 import 'package:star_menu/star_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
@@ -486,8 +488,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           side: BorderSide(width: 1, color: kPrimaryColour),
                         ),
                       ),
-                      onPressed: () {
-                        FirebaseAuth.instance.signOut();
+                      onPressed: () async {
+                        await AuthServices.signOut();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterScreen(),
+                          ),
+                        );
+                        // Navigator.pop(context);
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -505,7 +514,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 200,
                   )
                 ],
               ),

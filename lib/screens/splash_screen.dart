@@ -7,7 +7,9 @@ import 'package:habits/screens/register_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({Key? key, required this.nextScreen}) : super(key: key);
+
+  final Widget nextScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -28,22 +30,7 @@ class SplashScreen extends StatelessWidget {
         splash: 'assets/splash_logo.png',
         splashTransition: SplashTransition.fadeTransition,
         pageTransitionType: PageTransitionType.rightToLeft,
-        nextScreen: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return const Center(
-                child: Text('Something went wrong'),
-              );
-            } else if (snapshot.hasData) {
-              return const HomeScreen();
-            } else {
-              return const RegisterScreen();
-            }
-          },
-        ),
+        nextScreen: nextScreen,
       ),
     );
   }
