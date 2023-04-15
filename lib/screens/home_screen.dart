@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:habits/auth/authFunctions.dart';
 import 'package:habits/components/drawer_info_tile.dart';
+import 'package:habits/screens/habit_details_screen.dart';
 import 'package:habits/screens/register_screen.dart';
 import 'package:star_menu/star_menu.dart';
 import 'package:flutter/material.dart';
@@ -313,24 +314,57 @@ class _HomeScreenState extends State<HomeScreen> {
                                       : NotDoneIcon(),
                             );
                           }),
-                          children: <Widget>[
-                            Container(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: WeeklyDatePicker(
-                                  key: UniqueKey(),
-                                  doneDays:
-                                      habits_list[cardIndex][0].completedDays,
-                                  notDoneDays:
-                                      habits_list[cardIndex][0].notDoneDays,
-                                  selectedDay: get_SelectedDay(),
-                                  changeDay: (value) =>
-                                      (value) => setState(() {}),
-                                  enableWeeknumberText: false,
-                                  digitsColor: Colors.black,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: WeeklyDatePicker(
+                                key: UniqueKey(),
+                                doneDays:
+                                    habits_list[cardIndex][0].completedDays,
+                                notDoneDays:
+                                    habits_list[cardIndex][0].notDoneDays,
+                                selectedDay: get_SelectedDay(),
+                                changeDay: (value) =>
+                                    (value) => setState(() {}),
+                                enableWeeknumberText: false,
+                                digitsColor: Colors.black,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: kPrimaryColour,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HabitDetailsScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 12.0),
+                                    child: Text(
+                                      'View more details',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -340,8 +374,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   height: screenHeight * 0.04,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8),
                   child: Text(
                     'Others',
                     style: TextStyle(fontSize: 22),
@@ -385,21 +419,54 @@ class _HomeScreenState extends State<HomeScreen> {
                           subtitle: Text(
                               habits_list[cardIndex2][0].habit_description),
                           children: <Widget>[
-                            Container(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: WeeklyDatePicker(
-                                  doneDays: completedDays,
-                                  notDoneDays: notDoneDays,
-                                  selectedDay: get_SelectedDay(),
-                                  changeDay: (value) =>
-                                      (value) => setState(() {}),
-                                  selectedBackgroundColor: Colors.green,
-                                  enableWeeknumberText: false,
-                                  digitsColor: Colors.black,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: WeeklyDatePicker(
+                                doneDays: completedDays,
+                                notDoneDays: notDoneDays,
+                                selectedDay: get_SelectedDay(),
+                                changeDay: (value) =>
+                                    (value) => setState(() {}),
+                                selectedBackgroundColor: Colors.green,
+                                enableWeeknumberText: false,
+                                digitsColor: Colors.black,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: kPrimaryColour,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HabitDetailsScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 12.0),
+                                    child: Text(
+                                      'View more details',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),

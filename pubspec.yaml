@@ -45,6 +45,7 @@ dependencies:
   fluttertoast: ^8.2.1
   email_validator: ^2.1.17
   firebase_core: ^2.9.0
+  flutter_heatmap_calendar: ^1.0.5
 
 dev_dependencies:
   flutter_test:
