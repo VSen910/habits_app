@@ -138,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       bool isSuccess =
-                          await AuthServices.signUp(email!, password!);
+                          await AuthServices.signUp(firstName!, email!, password!);
                       if (isSuccess) {
                         Navigator.pushReplacement(
                           context,

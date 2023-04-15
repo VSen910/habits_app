@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:habits/auth/authFunctions.dart';
 import 'package:habits/components/drawer_info_tile.dart';
+import 'package:habits/dataHandling/dataHandler.dart';
 import 'package:habits/screens/habit_details_screen.dart';
 import 'package:habits/screens/register_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:star_menu/star_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
@@ -21,6 +24,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final statusKey = GlobalKey();
+
+  final String userEmail = FirebaseAuth.instance.currentUser!.email!;
+
   late List<List<HabitDetails>> habits_list = [
     [
       HabitDetails(
@@ -136,13 +142,32 @@ class _HomeScreenState extends State<HomeScreen> {
     return _selectedDay;
   }
 
+  String? username;
+
+  Future getUsername() async {
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email!)
+        .get();
+    setState(() {
+      username = userDoc.docs.first.get('name');
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUsername();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     // final screenWidht = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: CustomAppBar(
-        titleText: "Palash's\nhabits",
+        titleText: "$username's\nhabits",
         hasLeading: true,
       ),
       body: SafeArea(
@@ -162,212 +187,250 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.02),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: habits_list.length,
-                  separatorBuilder: (
-                    BuildContext context,
-                    int index,
-                  ) {
-                    return Container(
-                      padding: EdgeInsets.all(4),
-                    );
-                  },
-                  itemBuilder: (
-                    BuildContext context,
-                    int cardIndex,
-                  ) {
-                    return Padding(
-                      padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.black12)),
-                        child: ExpansionTile(
-                          textColor: Colors.black,
-                          iconColor: habits_list[cardIndex][0].get_color(),
-                          collapsedIconColor:
-                              habits_list[cardIndex][0].get_color(),
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(width: 2, color: Colors.black12),
-                              borderRadius: BorderRadius.circular(10)),
-                          leading: Container(
-                            margin: EdgeInsets.only(left: 8),
-                            height: double.infinity,
-                            child: Icon(
-                              habits_list[cardIndex][0].habit_icon,
-                              size: 28,
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('habits')
+                      .where('email',
+                          isEqualTo: FirebaseAuth.instance.currentUser!.email!)
+                      .where('weekdays',
+                          arrayContains: DateFormat('EEEE')
+                              .format(DateTime.now())
+                              .toLowerCase())
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (!snapshot.hasData ||
+                        snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text('Nothing to show'),
+                      );
+                    }
+
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      separatorBuilder: (context, index) {
+                        return Container(
+                          padding: EdgeInsets.all(4),
+                        );
+                      },
+                      itemBuilder: (context, cardIndex) {
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.black12),
                             ),
-                          ),
-                          title: Text(habits_list[cardIndex][0].habit_name),
-                          subtitle:
-                              Text(habits_list[cardIndex][0].habit_description),
-                          trailing: Builder(builder: (context) {
-                            StarMenuController statusIconController =
-                                StarMenuController();
-
-                            return StarMenu(
-                              controller: statusIconController,
-                              onStateChanged: (state) =>
-                                  print('State changed: $state'),
-                              onItemTapped: (index, statusIconController) {
-                                setState(() {
-                                  //Done Icon
-                                  if (index == 0) {
-                                    habits_list[cardIndex][0].status_icon = 0;
-                                    if (statusFlag == 0) {
-                                      habits_list[cardIndex][0]
-                                          .completedDays
-                                          .add(DateTime.parse(getTimeInfo()));
-                                      statusFlag = 1;
-                                    } else if (statusFlag == 1) {
-                                      if (habits_list[cardIndex][0]
-                                          .notDoneDays
-                                          .contains(
-                                              DateTime.parse(getTimeInfo()))) {
-                                        habits_list[cardIndex][0]
-                                            .notDoneDays
-                                            .remove(
-                                                DateTime.parse(getTimeInfo()));
-                                      }
-                                      habits_list[cardIndex][0]
-                                          .completedDays
-                                          .add(DateTime.parse(getTimeInfo()));
-                                    }
-                                  }
-
-                                  //Pending Icon
-                                  else if (index == 1) {
-                                    habits_list[cardIndex][0].status_icon = 1;
-                                    if (statusFlag == 0) {
-                                      statusFlag = 1;
-                                    } else if (statusFlag == 1) {
-                                      if (habits_list[cardIndex][0]
-                                          .completedDays
-                                          .contains(
-                                              DateTime.parse(getTimeInfo()))) {
-                                        habits_list[cardIndex][0]
-                                            .completedDays
-                                            .remove(
-                                                DateTime.parse(getTimeInfo()));
-                                      } else if (habits_list[cardIndex][0]
-                                          .notDoneDays
-                                          .contains(
-                                              DateTime.parse(getTimeInfo()))) {
-                                        habits_list[cardIndex][0]
-                                            .notDoneDays
-                                            .remove(
-                                                DateTime.parse(getTimeInfo()));
-                                      }
-                                    }
-                                  }
-
-                                  //Taken off Icon
-                                  else if (index == 2) {
-                                    habits_list[cardIndex][0].status_icon = 3;
-                                    if (statusFlag == 0) {
-                                      habits_list[cardIndex][0]
-                                          .notDoneDays
-                                          .add(DateTime.parse(getTimeInfo()));
-                                      statusFlag = 1;
-                                    } else if (statusFlag == 1) {
-                                      if (habits_list[cardIndex][0]
-                                          .completedDays
-                                          .contains(
-                                              DateTime.parse(getTimeInfo()))) {
-                                        habits_list[cardIndex][0]
-                                            .completedDays
-                                            .remove(
-                                                DateTime.parse(getTimeInfo()));
-                                      }
-                                      habits_list[cardIndex][0]
-                                          .notDoneDays
-                                          .add(DateTime.parse(getTimeInfo()));
-                                    }
-                                  }
-                                });
-                                statusIconController.closeMenu!();
-                                statusIconController.dispose();
-                              },
-                              params: StarMenuParameters(
-                                backgroundParams: BackgroundParams(
-                                    sigmaX: 3,
-                                    sigmaY: 3,
-                                    backgroundColor: Colors.black54),
-                                shape: MenuShape.linear,
-                                linearShapeParams: LinearShapeParams(
-                                    angle: 90,
-                                    alignment: LinearAlignment.left,
-                                    space: 15),
-                                centerOffset: Offset(10, -70),
-                                openDurationMs: 150,
+                            child: ExpansionTile(
+                              textColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                side:
+                                    BorderSide(width: 2, color: Colors.black12),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              items: status,
-                              parentContext: statusKey.currentContext,
-                              child: (habits_list[cardIndex][0].status_icon ==
-                                      0)
-                                  ? DoneIcon(onPressed: () {})
-                                  : (habits_list[cardIndex][0].status_icon == 1)
-                                      ? PendingIcon()
-                                      : NotDoneIcon(),
-                            );
-                          }),
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: WeeklyDatePicker(
-                                key: UniqueKey(),
-                                doneDays:
-                                    habits_list[cardIndex][0].completedDays,
-                                notDoneDays:
-                                    habits_list[cardIndex][0].notDoneDays,
-                                selectedDay: get_SelectedDay(),
-                                changeDay: (value) =>
-                                    (value) => setState(() {}),
-                                enableWeeknumberText: false,
-                                digitsColor: Colors.black,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: kPrimaryColour,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
+                              leading: Container(
+                                margin: EdgeInsets.only(left: 8),
+                                height: double.infinity,
+                                child: Icon(
+                                  IconData(
+                                    int.parse(
+                                        snapshot.data!.docs[cardIndex]
+                                            ['icondata'],
+                                        radix: 16),
+                                    fontFamily: 'MaterialIcons',
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            HabitDetailsScreen(),
-                                      ),
-                                    );
+                                  size: 28,
+                                  color: Color(int.parse(snapshot
+                                      .data!.docs[cardIndex]['iconColor'])),
+                                ),
+                              ),
+                              title:
+                                  Text(snapshot.data!.docs[cardIndex]['title']),
+                              subtitle: Text(
+                                  snapshot.data!.docs[cardIndex]['subtitle']),
+                              trailing: Builder(builder: (context) {
+                                StarMenuController statusIconController =
+                                    StarMenuController();
+
+                                return StarMenu(
+                                  controller: statusIconController,
+                                  onStateChanged: (state) =>
+                                      print('State changed: $state'),
+                                  onItemTapped: (index, statusIconController) {
+                                    setState(() {
+                                      //Done Icon
+                                      if (index == 0) {
+                                        habits_list[cardIndex][0].status_icon =
+                                            0;
+                                        if (statusFlag == 0) {
+                                          habits_list[cardIndex][0]
+                                              .completedDays
+                                              .add(DateTime.parse(
+                                                  getTimeInfo()));
+                                          statusFlag = 1;
+                                        } else if (statusFlag == 1) {
+                                          if (habits_list[cardIndex][0]
+                                              .notDoneDays
+                                              .contains(DateTime.parse(
+                                                  getTimeInfo()))) {
+                                            habits_list[cardIndex][0]
+                                                .notDoneDays
+                                                .remove(DateTime.parse(
+                                                    getTimeInfo()));
+                                          }
+                                          habits_list[cardIndex][0]
+                                              .completedDays
+                                              .add(DateTime.parse(
+                                                  getTimeInfo()));
+                                        }
+                                      }
+
+                                      //Pending Icon
+                                      else if (index == 1) {
+                                        habits_list[cardIndex][0].status_icon =
+                                            1;
+                                        if (statusFlag == 0) {
+                                          statusFlag = 1;
+                                        } else if (statusFlag == 1) {
+                                          if (habits_list[cardIndex][0]
+                                              .completedDays
+                                              .contains(DateTime.parse(
+                                                  getTimeInfo()))) {
+                                            habits_list[cardIndex][0]
+                                                .completedDays
+                                                .remove(DateTime.parse(
+                                                    getTimeInfo()));
+                                          } else if (habits_list[cardIndex][0]
+                                              .notDoneDays
+                                              .contains(DateTime.parse(
+                                                  getTimeInfo()))) {
+                                            habits_list[cardIndex][0]
+                                                .notDoneDays
+                                                .remove(DateTime.parse(
+                                                    getTimeInfo()));
+                                          }
+                                        }
+                                      }
+
+                                      //Taken off Icon
+                                      else if (index == 2) {
+                                        habits_list[cardIndex][0].status_icon =
+                                            3;
+                                        if (statusFlag == 0) {
+                                          habits_list[cardIndex][0]
+                                              .notDoneDays
+                                              .add(DateTime.parse(
+                                                  getTimeInfo()));
+                                          statusFlag = 1;
+                                        } else if (statusFlag == 1) {
+                                          if (habits_list[cardIndex][0]
+                                              .completedDays
+                                              .contains(DateTime.parse(
+                                                  getTimeInfo()))) {
+                                            habits_list[cardIndex][0]
+                                                .completedDays
+                                                .remove(DateTime.parse(
+                                                    getTimeInfo()));
+                                          }
+                                          habits_list[cardIndex][0]
+                                              .notDoneDays
+                                              .add(DateTime.parse(
+                                                  getTimeInfo()));
+                                        }
+                                      }
+                                    });
+                                    statusIconController.closeMenu!();
+                                    statusIconController.dispose();
                                   },
-                                  child: const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 12.0),
-                                    child: Text(
-                                      'View more details',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
+                                  params: StarMenuParameters(
+                                    backgroundParams: BackgroundParams(
+                                        sigmaX: 3,
+                                        sigmaY: 3,
+                                        backgroundColor: Colors.black54),
+                                    shape: MenuShape.linear,
+                                    linearShapeParams: LinearShapeParams(
+                                        angle: 90,
+                                        alignment: LinearAlignment.left,
+                                        space: 15),
+                                    centerOffset: Offset(10, -70),
+                                    openDurationMs: 150,
+                                  ),
+                                  items: status,
+                                  parentContext: statusKey.currentContext,
+                                  child:
+                                      (habits_list[cardIndex][0].status_icon ==
+                                              0)
+                                          ? DoneIcon(onPressed: () {})
+                                          : (habits_list[cardIndex][0]
+                                                      .status_icon ==
+                                                  1)
+                                              ? PendingIcon()
+                                              : NotDoneIcon(),
+                                );
+                              }),
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: WeeklyDatePicker(
+                                    key: UniqueKey(),
+                                    doneDays:
+                                        habits_list[cardIndex][0].completedDays,
+                                    notDoneDays:
+                                        habits_list[cardIndex][0].notDoneDays,
+                                    selectedDay: get_SelectedDay(),
+                                    changeDay: (value) =>
+                                        (value) => setState(() {}),
+                                    enableWeeknumberText: false,
+                                    digitsColor: Colors.black,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: kPrimaryColour,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                HabitDetailsScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 12.0),
+                                        child: Text(
+                                          'View more details',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -382,97 +445,138 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.02),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: habits_list.length,
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Container(
-                      padding: EdgeInsets.all(4),
-                    );
-                  },
-                  itemBuilder: (BuildContext context, int cardIndex2) {
-                    return Padding(
-                      padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.black12)),
-                        child: ExpansionTile(
-                          textColor: Colors.black,
-                          iconColor: habits_list[cardIndex2][0].get_color(),
-                          collapsedIconColor:
-                              habits_list[cardIndex2][0].get_color(),
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(width: 2, color: Colors.black12),
-                              borderRadius: BorderRadius.circular(10)),
-                          leading: Container(
-                            margin: EdgeInsets.only(left: 8),
-                            height: double.infinity,
-                            child: Icon(
-                              habits_list[cardIndex2][0].habit_icon,
-                              size: 28,
-                            ),
-                          ),
-                          title: Text(habits_list[cardIndex2][0].habit_name),
-                          subtitle: Text(
-                              habits_list[cardIndex2][0].habit_description),
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: WeeklyDatePicker(
-                                doneDays: completedDays,
-                                notDoneDays: notDoneDays,
-                                selectedDay: get_SelectedDay(),
-                                changeDay: (value) =>
-                                    (value) => setState(() {}),
-                                selectedBackgroundColor: Colors.green,
-                                enableWeeknumberText: false,
-                                digitsColor: Colors.black,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: kPrimaryColour,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('habits')
+                      .where('email',
+                          isEqualTo: FirebaseAuth.instance.currentUser!.email!)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (!snapshot.hasData ||
+                        snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text('Nothing to show'),
+                      );
+                    }
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Container(
+                          padding: EdgeInsets.all(4),
+                        );
+                      },
+                      itemBuilder: (context, cardIndex2) {
+                        bool hasToday = snapshot
+                            .data!.docs[cardIndex2]['weekdays']
+                            .contains(DateFormat('EEEE')
+                                .format(DateTime.now())
+                                .toLowerCase());
+                        if (hasToday) {
+                          return Container();
+                        }
+
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.black12)),
+                            child: ExpansionTile(
+                              textColor: Colors.black,
+                              iconColor: Color(int.parse(snapshot
+                                  .data!.docs[cardIndex2]['iconColor'])),
+                              collapsedIconColor: Color(int.parse(snapshot
+                                  .data!.docs[cardIndex2]['iconColor'])),
+                              shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                    width: 2,
+                                    color: Colors.black12,
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            HabitDetailsScreen(),
+                                  borderRadius: BorderRadius.circular(10)),
+                              leading: Container(
+                                margin: EdgeInsets.only(left: 8),
+                                height: double.infinity,
+                                child: Icon(
+                                  IconData(
+                                    int.parse(
+                                      snapshot.data!.docs[cardIndex2]
+                                          ['icondata'],
+                                      radix: 16,
+                                    ),
+                                    fontFamily: 'MaterialIcons',
+                                  ),
+                                  size: 28,
+                                ),
+                              ),
+                              title: Text(
+                                  snapshot.data!.docs[cardIndex2]['title']),
+                              subtitle: Text(
+                                  snapshot.data!.docs[cardIndex2]['subtitle']),
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: WeeklyDatePicker(
+                                    doneDays: completedDays,
+                                    notDoneDays: notDoneDays,
+                                    selectedDay: get_SelectedDay(),
+                                    changeDay: (value) =>
+                                        (value) => setState(() {}),
+                                    selectedBackgroundColor: Colors.green,
+                                    enableWeeknumberText: false,
+                                    digitsColor: Colors.black,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: kPrimaryColour,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
                                       ),
-                                    );
-                                  },
-                                  child: const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 12.0),
-                                    child: Text(
-                                      'View more details',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                HabitDetailsScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 12.0),
+                                        child: Text(
+                                          'View more details',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     );
                   },
-                ),
+                )
               ],
             ),
           ),

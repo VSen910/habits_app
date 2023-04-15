@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -18,12 +19,18 @@ class AuthServices {
     }
   }
 
-  static Future<bool> signUp(String email, String password) async {
+  static Future<bool> signUp(String name, String email, String password) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      await FirebaseFirestore.instance.collection('users').add({
+        'name': name,
+        'email': email,
+        'habits': [],
+        'rewards': [],
+      });
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -37,7 +44,7 @@ class AuthServices {
     try {
       await FirebaseAuth.instance.signOut();
     } on FirebaseAuthException catch (e) {
-      print(e);
+      Fluttertoast.showToast(msg: 'Something went wrong');
     }
   }
 
