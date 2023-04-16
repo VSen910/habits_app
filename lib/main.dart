@@ -5,15 +5,18 @@ import 'package:flutter/services.dart';
 import 'package:habits/screens/home_screen.dart';
 import 'package:habits/screens/register_screen.dart';
 import 'package:habits/screens/splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
+    const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ),
   );
+
+  final prefs = await SharedPreferences.getInstance();
 
   runApp(
     MaterialApp(
@@ -28,7 +31,7 @@ void main() async{
               child: Text('Something went wrong'),
             );
           } else if (snapshot.hasData) {
-            return const SplashScreen(nextScreen: HomeScreen(),);
+            return SplashScreen(nextScreen: HomeScreen(username: prefs.getString('username')!,),);
           } else {
             return const SplashScreen(nextScreen: RegisterScreen());
           }

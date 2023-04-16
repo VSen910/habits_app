@@ -16,7 +16,9 @@ import '../components/habit_status_icons.dart';
 import '../constants.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key, required this.username}) : super(key: key);
+
+  final String username;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -142,23 +144,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return _selectedDay;
   }
 
-  String? username;
+  // String? username;
 
-  Future getUsername() async {
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email!)
-        .get();
-    setState(() {
-      username = userDoc.docs.first.get('name');
-    });
-  }
+  // Future getUsername() async {
+  //   final userDoc = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email!)
+  //       .get();
+  //   setState(() {
+  //     username = userDoc.docs.first.get('name');
+  //   });
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUsername();
+    // getUsername();
   }
 
   @override
@@ -167,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // final screenWidht = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: CustomAppBar(
-        titleText: "$username's\nhabits",
+        titleText: "${widget.username}'s\nhabits",
         hasLeading: true,
       ),
       body: SafeArea(

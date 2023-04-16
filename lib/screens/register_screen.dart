@@ -137,13 +137,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      bool isSuccess =
+                      final username =
                           await AuthServices.signUp(firstName!, email!, password!);
-                      if (isSuccess) {
+                      if (username != null) {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomeScreen(),
+                            builder: (context) => HomeScreen(username: username,),
                           ),
                         );
                       }

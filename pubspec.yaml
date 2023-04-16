@@ -46,6 +46,7 @@ dependencies:
   email_validator: ^2.1.17
   firebase_core: ^2.9.0
   flutter_heatmap_calendar: ^1.0.5
+  shared_preferences: ^2.1.0
 
 dev_dependencies:
   flutter_test:

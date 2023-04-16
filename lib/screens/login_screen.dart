@@ -27,21 +27,21 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         titleText: 'habits',
         hasLeading: false,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                 height: screenHeight * 0.1,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 32.0, right: 64),
+              const Padding(
+                padding: EdgeInsets.only(left: 32.0, right: 64),
                 child: Text(
                   'Glad to have you back!',
                   style: TextStyle(
@@ -51,11 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 32.0, right: 48),
+              const Padding(
+                padding: EdgeInsets.only(left: 32.0, right: 48),
                 child: Text(
                   'Resume your journey in building better habits',
                   style: TextStyle(color: kGreyTextColour, fontSize: 16),
@@ -70,28 +70,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     CustomTextFormField(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: const Icon(Icons.email),
                       obscureText: false,
                       onSaved: (val) {
                         setState(() {
                           email = val;
                         });
                       },
-                      validator: (val) {},
+                      validator: (val) {
+                        return null;
+                      },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     CustomTextFormField(
                       labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock),
                       obscureText: true,
                       onSaved: (val) {
                         setState(() {
                           password = val;
                         });
                       },
-                      validator: (val) {},
+                      validator: (val) {
+                        return null;
+                      },
                     ),
                   ],
                 ),
@@ -105,26 +109,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: kPrimaryColour,
                       elevation: 0,
-                      minimumSize: Size(double.infinity, 60),
+                      minimumSize: const Size(double.infinity, 60),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      bool isSuccess =
+                      final username =
                           await AuthServices.signIn(email!, password!);
-                      if (isSuccess) {
+                      if (username != null) {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomeScreen(),
+                            builder: (context) => HomeScreen(username: username,),
                           ),
                         );
                       }
                     }
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  child: const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Login',
                       style: TextStyle(fontSize: 16),
@@ -139,11 +143,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RegisterScreen(),
+                        builder: (context) => const RegisterScreen(),
                       ),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     'Don\'t have an account yet? Sign up',
                     style: TextStyle(
                       fontSize: 16,
