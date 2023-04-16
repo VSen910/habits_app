@@ -4,9 +4,12 @@ import 'package:habits/components/custom_appbar.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:habits/components/habit_details_card.dart';
 import 'package:habits/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HabitDetailsScreen extends StatefulWidget {
-  const HabitDetailsScreen({Key? key}) : super(key: key);
+  const HabitDetailsScreen({Key? key, required this.prefs}) : super(key: key);
+
+  final SharedPreferences prefs;
 
   @override
   State<HabitDetailsScreen> createState() => _HabitDetailsScreenState();

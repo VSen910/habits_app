@@ -5,11 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:habits/screens/home_screen.dart';
 import 'package:habits/screens/register_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key, required this.nextScreen}) : super(key: key);
+  const SplashScreen({Key? key, required this.nextScreen, required this.prefs})
+      : super(key: key);
 
   final Widget nextScreen;
+  final SharedPreferences prefs;
 
   @override
   Widget build(BuildContext context) {

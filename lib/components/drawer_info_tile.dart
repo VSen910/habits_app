@@ -20,10 +20,10 @@ class _DrawerInfoTileState extends State<DrawerInfoTile> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Text(
             widget.title,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
         ),
         Padding(
@@ -32,7 +32,7 @@ class _DrawerInfoTileState extends State<DrawerInfoTile> {
             widget.value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 24, color: kPrimaryColour),
+            style: const TextStyle(fontSize: 20, color: kPrimaryColour),
           ),
         ),
       ],

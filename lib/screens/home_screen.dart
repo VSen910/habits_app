@@ -7,6 +7,7 @@ import 'package:habits/dataHandling/dataHandler.dart';
 import 'package:habits/screens/habit_details_screen.dart';
 import 'package:habits/screens/register_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:star_menu/star_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
@@ -16,9 +17,11 @@ import '../components/habit_status_icons.dart';
 import '../constants.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required this.username}) : super(key: key);
+  const HomeScreen({Key? key, required this.username, required this.prefs})
+      : super(key: key);
 
   final String username;
+  final SharedPreferences prefs;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -410,7 +413,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                HabitDetailsScreen(),
+                                                HabitDetailsScreen(
+                                              prefs: widget.prefs,
+                                            ),
                                           ),
                                         );
                                       },
@@ -464,6 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text('Nothing to show'),
                       );
                     }
+
                     return ListView.separated(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -553,7 +559,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                HabitDetailsScreen(),
+                                                HabitDetailsScreen(
+                                              prefs: widget.prefs,
+                                            ),
                                           ),
                                         );
                                       },
@@ -629,58 +637,59 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white,
               child: Column(
                 children: [
+                  SizedBox(
+                    height: screenHeight * 0.05,
+                  ),
                   DrawerInfoTile(
                     title: 'Username',
-                    value: 'Palash',
+                    value: widget.prefs.getString('username')!,
                   ),
                   SizedBox(
                     height: 20,
                   ),
                   DrawerInfoTile(
                     title: 'Email',
-                    value: 'palash@bhasme.com',
+                    value: userEmail,
                   ),
                   SizedBox(
-                    height: 20,
-                  ),
-                  DrawerInfoTile(
-                    title: 'Habits being tracked',
-                    value: '3',
-                  ),
-                  SizedBox(
-                    height: screenHeight * 0.3,
+                    height: screenHeight * 0.4,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(width: 1, color: kPrimaryColour),
-                        ),
-                      ),
-                      onPressed: () async {
-                        await AuthServices.signOut();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterScreen(),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(width: 1, color: kPrimaryColour),
                           ),
-                        );
-                        // Navigator.pop(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12.0,
-                          horizontal: 24.0,
                         ),
-                        child: Text(
-                          'Sign out',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: kPrimaryColour,
+                        onPressed: () async {
+                          await AuthServices.signOut();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegisterScreen(
+                                prefs: widget.prefs,
+                              ),
+                            ),
+                          );
+                          // Navigator.pop(context);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12.0,
+                            horizontal: 24.0,
+                          ),
+                          child: Text(
+                            'Sign out',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: kPrimaryColour,
+                            ),
                           ),
                         ),
                       ),
@@ -688,7 +697,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(
                     height: 200,
-                  )
+                  ),
                 ],
               ),
             ),

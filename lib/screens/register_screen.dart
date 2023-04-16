@@ -5,11 +5,14 @@ import 'package:habits/components/custom_textformfield.dart';
 import 'package:habits/constants.dart';
 import 'package:habits/screens/home_screen.dart';
 import 'package:habits/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/custom_appbar.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({Key? key, required this.prefs}) : super(key: key);
+
+  final SharedPreferences prefs;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -143,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomeScreen(username: username,),
+                            builder: (context) => HomeScreen(username: username, prefs: widget.prefs,),
                           ),
                         );
                       }
@@ -165,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
+                        builder: (context) => LoginScreen(prefs: widget.prefs,),
                       ),
                     );
                   },

@@ -7,7 +7,7 @@ import 'package:habits/screens/register_screen.dart';
 import 'package:habits/screens/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setSystemUIOverlayStyle(
@@ -31,9 +31,18 @@ void main() async{
               child: Text('Something went wrong'),
             );
           } else if (snapshot.hasData) {
-            return SplashScreen(nextScreen: HomeScreen(username: prefs.getString('username')!,),);
+            return SplashScreen(
+              nextScreen: HomeScreen(
+                username: prefs.getString('username')!,
+                prefs: prefs,
+              ),
+              prefs: prefs,
+            );
           } else {
-            return const SplashScreen(nextScreen: RegisterScreen());
+            return SplashScreen(
+              nextScreen: RegisterScreen(prefs: prefs,),
+              prefs: prefs,
+            );
           }
         },
       ),
