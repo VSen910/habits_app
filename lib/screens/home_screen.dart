@@ -224,228 +224,232 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                       itemBuilder: (context, cardIndex) {
-                        return Padding(
-                          padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.black12),
+                          ),
+                          child: ExpansionTile(
+                            textColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(width: 2, color: Colors.black12),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.black12),
                             ),
-                            child: ExpansionTile(
-                              textColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                side:
-                                    BorderSide(width: 2, color: Colors.black12),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              leading: Container(
-                                margin: EdgeInsets.only(left: 8),
-                                height: double.infinity,
-                                child: Icon(
-                                  IconData(
-                                    int.parse(
-                                        snapshot.data!.docs[cardIndex]
-                                            ['icondata'],
-                                        radix: 16),
-                                    fontFamily: 'MaterialIcons',
-                                  ),
-                                  size: 28,
-                                  color: Color(int.parse(snapshot
-                                      .data!.docs[cardIndex]['iconColor'])),
+                            leading: Container(
+                              margin: EdgeInsets.only(left: 8),
+                              height: double.infinity,
+                              child: Icon(
+                                IconData(
+                                  int.parse(
+                                      snapshot.data!.docs[cardIndex]
+                                          ['icondata'],
+                                      radix: 16),
+                                  fontFamily: 'MaterialIcons',
                                 ),
+                                size: 28,
+                                color: Color(int.parse(snapshot
+                                    .data!.docs[cardIndex]['iconColor'])),
                               ),
-                              title:
+                            ),
+                            title: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child:
                                   Text(snapshot.data!.docs[cardIndex]['title']),
-                              subtitle: Text(
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text(
                                   snapshot.data!.docs[cardIndex]['subtitle']),
-                              trailing: Builder(builder: (context) {
-                                StarMenuController statusIconController =
-                                    StarMenuController();
+                            ),
+                            trailing: Builder(builder: (context) {
+                              StarMenuController statusIconController =
+                                  StarMenuController();
 
-                                return StarMenu(
-                                  controller: statusIconController,
-                                  onStateChanged: (state) =>
-                                      print('State changed: $state'),
-                                  onItemTapped:
-                                      (index, statusIconController) async {
-                                    var habitDoc = FirebaseFirestore.instance.collection('habits').doc(snapshot.data!.docs[cardIndex].id);
+                              return StarMenu(
+                                controller: statusIconController,
+                                onStateChanged: (state) =>
+                                    print('State changed: $state'),
+                                onItemTapped:
+                                    (index, statusIconController) async {
+                                  var habitDoc = FirebaseFirestore.instance
+                                      .collection('habits')
+                                      .doc(snapshot.data!.docs[cardIndex].id);
 
-                                    setState(() {
-                                      //Done Icon
-                                      if (index == 0) {
-                                        // habits_list[cardIndex][0].status_icon =
-                                        //     0;
-                                        habitDoc.update({'currentStatus': 0});
+                                  setState(() {
+                                    //Done Icon
+                                    if (index == 0) {
+                                      // habits_list[cardIndex][0].status_icon =
+                                      //     0;
+                                      habitDoc.update({'currentStatus': 0});
 
+                                      // if (statusFlag == 0) {
+                                      //   habits_list[cardIndex][0]
+                                      //       .completedDays
+                                      //       .add(DateTime.parse(
+                                      //           getTimeInfo()));
+                                      //   statusFlag = 1;
+                                      // } else if (statusFlag == 1) {
+                                      //   if (habits_list[cardIndex][0]
+                                      //       .notDoneDays
+                                      //       .contains(DateTime.parse(
+                                      //           getTimeInfo()))) {
+                                      //     habits_list[cardIndex][0]
+                                      //         .notDoneDays
+                                      //         .remove(DateTime.parse(
+                                      //             getTimeInfo()));
+                                      //   }
+                                      //   habits_list[cardIndex][0]
+                                      //       .completedDays
+                                      //       .add(DateTime.parse(
+                                      //           getTimeInfo()));
+                                      // }
+                                    }
 
+                                    //Pending Icon
+                                    else if (index == 1) {
+                                      // habits_list[cardIndex][0].status_icon =
+                                      //     1;
+                                      habitDoc.update({'currentStatus': 1});
 
-                                        // if (statusFlag == 0) {
-                                        //   habits_list[cardIndex][0]
-                                        //       .completedDays
-                                        //       .add(DateTime.parse(
-                                        //           getTimeInfo()));
-                                        //   statusFlag = 1;
-                                        // } else if (statusFlag == 1) {
-                                        //   if (habits_list[cardIndex][0]
-                                        //       .notDoneDays
-                                        //       .contains(DateTime.parse(
-                                        //           getTimeInfo()))) {
-                                        //     habits_list[cardIndex][0]
-                                        //         .notDoneDays
-                                        //         .remove(DateTime.parse(
-                                        //             getTimeInfo()));
-                                        //   }
-                                        //   habits_list[cardIndex][0]
-                                        //       .completedDays
-                                        //       .add(DateTime.parse(
-                                        //           getTimeInfo()));
-                                        // }
-                                      }
+                                      // if (statusFlag == 0) {
+                                      //   statusFlag = 1;
+                                      // } else if (statusFlag == 1) {
+                                      //   if (habits_list[cardIndex][0]
+                                      //       .completedDays
+                                      //       .contains(DateTime.parse(
+                                      //           getTimeInfo()))) {
+                                      //     habits_list[cardIndex][0]
+                                      //         .completedDays
+                                      //         .remove(DateTime.parse(
+                                      //             getTimeInfo()));
+                                      //   } else if (habits_list[cardIndex][0]
+                                      //       .notDoneDays
+                                      //       .contains(DateTime.parse(
+                                      //           getTimeInfo()))) {
+                                      //     habits_list[cardIndex][0]
+                                      //         .notDoneDays
+                                      //         .remove(DateTime.parse(
+                                      //             getTimeInfo()));
+                                      //   }
+                                      // }
+                                    }
 
-                                      //Pending Icon
-                                      else if (index == 1) {
-                                        // habits_list[cardIndex][0].status_icon =
-                                        //     1;
-                                        habitDoc.update({'currentStatus': 1});
+                                    //Taken off Icon
+                                    else if (index == 2) {
+                                      // habits_list[cardIndex][0].status_icon =
+                                      //     3;
+                                      habitDoc.update({'currentStatus': 2});
 
-                                        // if (statusFlag == 0) {
-                                        //   statusFlag = 1;
-                                        // } else if (statusFlag == 1) {
-                                        //   if (habits_list[cardIndex][0]
-                                        //       .completedDays
-                                        //       .contains(DateTime.parse(
-                                        //           getTimeInfo()))) {
-                                        //     habits_list[cardIndex][0]
-                                        //         .completedDays
-                                        //         .remove(DateTime.parse(
-                                        //             getTimeInfo()));
-                                        //   } else if (habits_list[cardIndex][0]
-                                        //       .notDoneDays
-                                        //       .contains(DateTime.parse(
-                                        //           getTimeInfo()))) {
-                                        //     habits_list[cardIndex][0]
-                                        //         .notDoneDays
-                                        //         .remove(DateTime.parse(
-                                        //             getTimeInfo()));
-                                        //   }
-                                        // }
-                                      }
-
-                                      //Taken off Icon
-                                      else if (index == 2) {
-                                        // habits_list[cardIndex][0].status_icon =
-                                        //     3;
-                                        habitDoc.update({'currentStatus': 2});
-
-                                        // if (statusFlag == 0) {
-                                        //   habits_list[cardIndex][0]
-                                        //       .notDoneDays
-                                        //       .add(DateTime.parse(
-                                        //           getTimeInfo()));
-                                        //   statusFlag = 1;
-                                        // } else if (statusFlag == 1) {
-                                        //   if (habits_list[cardIndex][0]
-                                        //       .completedDays
-                                        //       .contains(DateTime.parse(
-                                        //           getTimeInfo()))) {
-                                        //     habits_list[cardIndex][0]
-                                        //         .completedDays
-                                        //         .remove(DateTime.parse(
-                                        //             getTimeInfo()));
-                                        //   }
-                                        //   habits_list[cardIndex][0]
-                                        //       .notDoneDays
-                                        //       .add(DateTime.parse(
-                                        //           getTimeInfo()));
-                                        // }
-                                      }
-                                    });
-                                    statusIconController.closeMenu!();
-                                    statusIconController.dispose();
-                                  },
-                                  params: StarMenuParameters(
-                                    backgroundParams: BackgroundParams(
-                                        sigmaX: 3,
-                                        sigmaY: 3,
-                                        backgroundColor: Colors.black54),
-                                    shape: MenuShape.linear,
-                                    linearShapeParams: LinearShapeParams(
-                                        angle: 90,
-                                        alignment: LinearAlignment.left,
-                                        space: 15),
-                                    centerOffset: Offset(10, -70),
-                                    openDurationMs: 150,
-                                  ),
-                                  items: status,
-                                  parentContext: statusKey.currentContext,
-                                  child: (snapshot.data!.docs[cardIndex]
-                                              ['currentStatus'] ==
-                                          0)
-                                      ? DoneIcon(onPressed: () {})
-                                      : (snapshot.data!.docs[cardIndex]
-                                                  ['currentStatus'] ==
-                                              1)
-                                          ? PendingIcon()
-                                          : NotDoneIcon(),
-                                );
-                              }),
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: WeeklyDatePicker(
-                                    key: UniqueKey(),
-                                    doneDays:
-                                        habits_list[cardIndex][0].completedDays,
-                                    notDoneDays:
-                                        habits_list[cardIndex][0].notDoneDays,
-                                    selectedDay: get_SelectedDay(),
-                                    changeDay: (value) =>
-                                        (value) => setState(() {}),
-                                    enableWeeknumberText: false,
-                                    digitsColor: Colors.black,
-                                  ),
+                                      // if (statusFlag == 0) {
+                                      //   habits_list[cardIndex][0]
+                                      //       .notDoneDays
+                                      //       .add(DateTime.parse(
+                                      //           getTimeInfo()));
+                                      //   statusFlag = 1;
+                                      // } else if (statusFlag == 1) {
+                                      //   if (habits_list[cardIndex][0]
+                                      //       .completedDays
+                                      //       .contains(DateTime.parse(
+                                      //           getTimeInfo()))) {
+                                      //     habits_list[cardIndex][0]
+                                      //         .completedDays
+                                      //         .remove(DateTime.parse(
+                                      //             getTimeInfo()));
+                                      //   }
+                                      //   habits_list[cardIndex][0]
+                                      //       .notDoneDays
+                                      //       .add(DateTime.parse(
+                                      //           getTimeInfo()));
+                                      // }
+                                    }
+                                  });
+                                  statusIconController.closeMenu!();
+                                  statusIconController.dispose();
+                                },
+                                params: StarMenuParameters(
+                                  backgroundParams: BackgroundParams(
+                                      sigmaX: 3,
+                                      sigmaY: 3,
+                                      backgroundColor: Colors.black54),
+                                  shape: MenuShape.linear,
+                                  linearShapeParams: LinearShapeParams(
+                                      angle: 90,
+                                      alignment: LinearAlignment.left,
+                                      space: 15),
+                                  centerOffset: Offset(10, -70),
+                                  openDurationMs: 150,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: kPrimaryColour,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
+                                items: status,
+                                parentContext: statusKey.currentContext,
+                                child: (snapshot.data!.docs[cardIndex]
+                                            ['currentStatus'] ==
+                                        0)
+                                    ? DoneIcon(onPressed: () {})
+                                    : (snapshot.data!.docs[cardIndex]
+                                                ['currentStatus'] ==
+                                            1)
+                                        ? PendingIcon()
+                                        : NotDoneIcon(),
+                              );
+                            }),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: WeeklyDatePicker(
+                                  key: UniqueKey(),
+                                  doneDays:
+                                      habits_list[cardIndex][0].completedDays,
+                                  notDoneDays:
+                                      habits_list[cardIndex][0].notDoneDays,
+                                  selectedDay: get_SelectedDay(),
+                                  changeDay: (value) =>
+                                      (value) => setState(() {}),
+                                  enableWeeknumberText: false,
+                                  digitsColor: Colors.black,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: kPrimaryColour,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                HabitDetailsScreen(
-                                              prefs: widget.prefs,
-                                            ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              HabitDetailsScreen(
+                                            prefs: widget.prefs,
+                                            username: widget.username,
+                                            habitId: snapshot
+                                                .data!.docs[cardIndex].id,
                                           ),
-                                        );
-                                      },
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 12.0),
-                                        child: Text(
-                                          'View more details',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 12.0),
+                                      child: Text(
+                                        'View more details',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -504,9 +508,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
                           child: Container(
                             decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.black12)),
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.black12),
+                            ),
                             child: ExpansionTile(
                               textColor: Colors.black,
                               iconColor: Color(int.parse(snapshot
@@ -572,6 +577,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             builder: (context) =>
                                                 HabitDetailsScreen(
                                               prefs: widget.prefs,
+                                              username: widget.username,
+                                              habitId: snapshot
+                                                  .data!.docs[cardIndex2].id,
                                             ),
                                           ),
                                         );
