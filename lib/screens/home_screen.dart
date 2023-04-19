@@ -224,6 +224,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                       itemBuilder: (context, cardIndex) {
+                        final List doneDatesTstp =
+                            snapshot.data!.docs[cardIndex]['doneDates'];
+                        final List notDoneDatesTstp =
+                            snapshot.data!.docs[cardIndex]['notDoneDates'];
+
+                        List<DateTime> doneDates = [];
+                        List<DateTime> notDoneDates = [];
+
+                        for (var date in doneDatesTstp) {
+                          date = date.toDate();
+                          DateTime newDate =
+                              DateTime(date.year, date.month, date.day);
+                          doneDates.add(newDate);
+                        }
+                        for (var date in notDoneDatesTstp) {
+                          date = date.toDate();
+                          DateTime newDate =
+                              DateTime(date.year, date.month, date.day);
+                          notDoneDates.add(newDate);
+                        }
+
                         return Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
@@ -398,10 +419,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: WeeklyDatePicker(
                                   key: UniqueKey(),
-                                  doneDays:
-                                      habits_list[cardIndex][0].completedDays,
-                                  notDoneDays:
-                                      habits_list[cardIndex][0].notDoneDays,
+                                  doneDays: doneDates,
+                                  notDoneDays: notDoneDates,
                                   selectedDay: get_SelectedDay(),
                                   changeDay: (value) =>
                                       (value) => setState(() {}),
@@ -504,6 +523,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           return Container();
                         }
 
+                        final List doneDatesTstp =
+                            snapshot.data!.docs[cardIndex2]['doneDates'];
+                        final List notDoneDatesTstp =
+                            snapshot.data!.docs[cardIndex2]['notDoneDates'];
+
+                        List<DateTime> doneDates = [];
+                        List<DateTime> notDoneDates = [];
+
+                        for (var date in doneDatesTstp) {
+                          date = date.toDate();
+                          DateTime newDate =
+                              DateTime(date.year, date.month, date.day);
+                          doneDates.add(newDate);
+                        }
+                        for (var date in notDoneDatesTstp) {
+                          date = date.toDate();
+                          DateTime newDate =
+                              DateTime(date.year, date.month, date.day);
+                          notDoneDates.add(newDate);
+                        }
+
                         return Padding(
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
                           child: Container(
@@ -547,8 +587,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: WeeklyDatePicker(
-                                    doneDays: [],
-                                    notDoneDays: notDoneDays,
+                                    doneDays: doneDates,
+                                    notDoneDays: notDoneDates,
                                     selectedDay: get_SelectedDay(),
                                     changeDay: (value) =>
                                         (value) => setState(() {}),

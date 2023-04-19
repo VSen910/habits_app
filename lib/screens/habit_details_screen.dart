@@ -26,13 +26,13 @@ class HabitDetailsScreen extends StatefulWidget {
 }
 
 class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
-  var dataset = {
-    DateTime(2023, 1, 6): 1,
-    DateTime(2023, 1, 7): 1,
-    DateTime(2023, 1, 8): 1,
-    DateTime(2023, 1, 9): 1,
-    DateTime(2023, 1, 13): 1,
-  };
+  // var dataset = {
+  //   DateTime(2023, 1, 6): 1,
+  //   DateTime(2023, 1, 7): 1,
+  //   DateTime(2023, 1, 8): 1,
+  //   DateTime(2023, 1, 9): 1,
+  //   DateTime(2023, 1, 13): 1,
+  // };
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +49,27 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
               .snapshots(),
           builder: (context, snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
+
+            final List doneDates = snapshot.data!['doneDates'];
+            final List notDoneDates = snapshot.data!['notDoneDates'];
+
+            Map<DateTime, int> dataset = {};
+            for(int i=0; i<doneDates.length; i++) {
+              DateTime date = doneDates[i].toDate();
+              DateTime newDate = DateTime(date.year, date.month, date.day);
+              dataset[newDate] = 1;
+            }
+            for(int i=0; i<notDoneDates.length; i++) {
+              DateTime date = notDoneDates[i].toDate();
+              DateTime newDate = DateTime(date.year, date.month, date.day);
+              dataset[newDate] = 2;
+            }
+
+            // print(dataset.toString());
 
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
@@ -85,6 +102,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           datasets: dataset,
                           colorsets: const {
                             1: Colors.green,
+                            2: Colors.red,
                           },
                           textColor: Colors.white,
                           monthFontSize: 24,

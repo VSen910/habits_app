@@ -20,14 +20,14 @@ class AuthServices {
       await prefs.setString('username', userDoc.docs.first.get('name'));
 
       final now = await NTP.now();
-      final midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      final midnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0);
       final timeUntilMidnight = midnight.difference(now);
       var uniqueId = DateTime.now().second.toString();
       await Workmanager().registerPeriodicTask(
         uniqueId,
         'reset-status-task',
-        frequency: Duration(minutes: 3),
-        // initialDelay: timeUntilMidnight,
+        frequency: const Duration(days: 1),
+        initialDelay: timeUntilMidnight,
         constraints: Constraints(
           networkType: NetworkType.connected,
         ),
@@ -63,8 +63,8 @@ class AuthServices {
       await Workmanager().registerPeriodicTask(
         uniqueId,
         'reset-status-task',
-        frequency: Duration(minutes: 3),
-        // initialDelay: timeUntilMidnight,
+        frequency: const Duration(days: 1),
+        initialDelay: timeUntilMidnight,
         constraints: Constraints(
           networkType: NetworkType.connected,
         ),
