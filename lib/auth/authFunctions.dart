@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:ntp/ntp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
 class AuthServices {
   static Future signIn(String email, String password) async {
@@ -16,6 +18,20 @@ class AuthServices {
           .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email!)
           .get();
       await prefs.setString('username', userDoc.docs.first.get('name'));
+
+      final now = await NTP.now();
+      final midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      final timeUntilMidnight = midnight.difference(now);
+      var uniqueId = DateTime.now().second.toString();
+      await Workmanager().registerPeriodicTask(
+        uniqueId,
+        'reset-status-task',
+        frequency: Duration(minutes: 3),
+        // initialDelay: timeUntilMidnight,
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+        ),
+      );
       return prefs.getString('username');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' || e.code == 'wrong-password') {
@@ -39,6 +55,21 @@ class AuthServices {
         'habits': [],
         'rewards': [],
       });
+
+      final now = await NTP.now();
+      final midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      final timeUntilMidnight = midnight.difference(now);
+      var uniqueId = DateTime.now().second.toString();
+      await Workmanager().registerPeriodicTask(
+        uniqueId,
+        'reset-status-task',
+        frequency: Duration(minutes: 3),
+        // initialDelay: timeUntilMidnight,
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+        ),
+      );
+
       await prefs.setString('username', name);
       return name;
     } on FirebaseAuthException catch (e) {
@@ -53,6 +84,9 @@ class AuthServices {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('username');
+
+      await Workmanager().cancelAll();
+
       await FirebaseAuth.instance.signOut();
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: 'Something went wrong');

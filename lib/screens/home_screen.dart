@@ -267,87 +267,98 @@ class _HomeScreenState extends State<HomeScreen> {
                                   controller: statusIconController,
                                   onStateChanged: (state) =>
                                       print('State changed: $state'),
-                                  onItemTapped: (index, statusIconController) {
+                                  onItemTapped:
+                                      (index, statusIconController) async {
+                                    var habitDoc = FirebaseFirestore.instance.collection('habits').doc(snapshot.data!.docs[cardIndex].id);
+
                                     setState(() {
                                       //Done Icon
                                       if (index == 0) {
-                                        habits_list[cardIndex][0].status_icon =
-                                            0;
-                                        if (statusFlag == 0) {
-                                          habits_list[cardIndex][0]
-                                              .completedDays
-                                              .add(DateTime.parse(
-                                                  getTimeInfo()));
-                                          statusFlag = 1;
-                                        } else if (statusFlag == 1) {
-                                          if (habits_list[cardIndex][0]
-                                              .notDoneDays
-                                              .contains(DateTime.parse(
-                                                  getTimeInfo()))) {
-                                            habits_list[cardIndex][0]
-                                                .notDoneDays
-                                                .remove(DateTime.parse(
-                                                    getTimeInfo()));
-                                          }
-                                          habits_list[cardIndex][0]
-                                              .completedDays
-                                              .add(DateTime.parse(
-                                                  getTimeInfo()));
-                                        }
+                                        // habits_list[cardIndex][0].status_icon =
+                                        //     0;
+                                        habitDoc.update({'currentStatus': 0});
+
+
+
+                                        // if (statusFlag == 0) {
+                                        //   habits_list[cardIndex][0]
+                                        //       .completedDays
+                                        //       .add(DateTime.parse(
+                                        //           getTimeInfo()));
+                                        //   statusFlag = 1;
+                                        // } else if (statusFlag == 1) {
+                                        //   if (habits_list[cardIndex][0]
+                                        //       .notDoneDays
+                                        //       .contains(DateTime.parse(
+                                        //           getTimeInfo()))) {
+                                        //     habits_list[cardIndex][0]
+                                        //         .notDoneDays
+                                        //         .remove(DateTime.parse(
+                                        //             getTimeInfo()));
+                                        //   }
+                                        //   habits_list[cardIndex][0]
+                                        //       .completedDays
+                                        //       .add(DateTime.parse(
+                                        //           getTimeInfo()));
+                                        // }
                                       }
 
                                       //Pending Icon
                                       else if (index == 1) {
-                                        habits_list[cardIndex][0].status_icon =
-                                            1;
-                                        if (statusFlag == 0) {
-                                          statusFlag = 1;
-                                        } else if (statusFlag == 1) {
-                                          if (habits_list[cardIndex][0]
-                                              .completedDays
-                                              .contains(DateTime.parse(
-                                                  getTimeInfo()))) {
-                                            habits_list[cardIndex][0]
-                                                .completedDays
-                                                .remove(DateTime.parse(
-                                                    getTimeInfo()));
-                                          } else if (habits_list[cardIndex][0]
-                                              .notDoneDays
-                                              .contains(DateTime.parse(
-                                                  getTimeInfo()))) {
-                                            habits_list[cardIndex][0]
-                                                .notDoneDays
-                                                .remove(DateTime.parse(
-                                                    getTimeInfo()));
-                                          }
-                                        }
+                                        // habits_list[cardIndex][0].status_icon =
+                                        //     1;
+                                        habitDoc.update({'currentStatus': 1});
+
+                                        // if (statusFlag == 0) {
+                                        //   statusFlag = 1;
+                                        // } else if (statusFlag == 1) {
+                                        //   if (habits_list[cardIndex][0]
+                                        //       .completedDays
+                                        //       .contains(DateTime.parse(
+                                        //           getTimeInfo()))) {
+                                        //     habits_list[cardIndex][0]
+                                        //         .completedDays
+                                        //         .remove(DateTime.parse(
+                                        //             getTimeInfo()));
+                                        //   } else if (habits_list[cardIndex][0]
+                                        //       .notDoneDays
+                                        //       .contains(DateTime.parse(
+                                        //           getTimeInfo()))) {
+                                        //     habits_list[cardIndex][0]
+                                        //         .notDoneDays
+                                        //         .remove(DateTime.parse(
+                                        //             getTimeInfo()));
+                                        //   }
+                                        // }
                                       }
 
                                       //Taken off Icon
                                       else if (index == 2) {
-                                        habits_list[cardIndex][0].status_icon =
-                                            3;
-                                        if (statusFlag == 0) {
-                                          habits_list[cardIndex][0]
-                                              .notDoneDays
-                                              .add(DateTime.parse(
-                                                  getTimeInfo()));
-                                          statusFlag = 1;
-                                        } else if (statusFlag == 1) {
-                                          if (habits_list[cardIndex][0]
-                                              .completedDays
-                                              .contains(DateTime.parse(
-                                                  getTimeInfo()))) {
-                                            habits_list[cardIndex][0]
-                                                .completedDays
-                                                .remove(DateTime.parse(
-                                                    getTimeInfo()));
-                                          }
-                                          habits_list[cardIndex][0]
-                                              .notDoneDays
-                                              .add(DateTime.parse(
-                                                  getTimeInfo()));
-                                        }
+                                        // habits_list[cardIndex][0].status_icon =
+                                        //     3;
+                                        habitDoc.update({'currentStatus': 2});
+
+                                        // if (statusFlag == 0) {
+                                        //   habits_list[cardIndex][0]
+                                        //       .notDoneDays
+                                        //       .add(DateTime.parse(
+                                        //           getTimeInfo()));
+                                        //   statusFlag = 1;
+                                        // } else if (statusFlag == 1) {
+                                        //   if (habits_list[cardIndex][0]
+                                        //       .completedDays
+                                        //       .contains(DateTime.parse(
+                                        //           getTimeInfo()))) {
+                                        //     habits_list[cardIndex][0]
+                                        //         .completedDays
+                                        //         .remove(DateTime.parse(
+                                        //             getTimeInfo()));
+                                        //   }
+                                        //   habits_list[cardIndex][0]
+                                        //       .notDoneDays
+                                        //       .add(DateTime.parse(
+                                        //           getTimeInfo()));
+                                        // }
                                       }
                                     });
                                     statusIconController.closeMenu!();
@@ -368,15 +379,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   items: status,
                                   parentContext: statusKey.currentContext,
-                                  child:
-                                      (habits_list[cardIndex][0].status_icon ==
-                                              0)
-                                          ? DoneIcon(onPressed: () {})
-                                          : (habits_list[cardIndex][0]
-                                                      .status_icon ==
-                                                  1)
-                                              ? PendingIcon()
-                                              : NotDoneIcon(),
+                                  child: (snapshot.data!.docs[cardIndex]
+                                              ['currentStatus'] ==
+                                          0)
+                                      ? DoneIcon(onPressed: () {})
+                                      : (snapshot.data!.docs[cardIndex]
+                                                  ['currentStatus'] ==
+                                              1)
+                                          ? PendingIcon()
+                                          : NotDoneIcon(),
                                 );
                               }),
                               children: [
@@ -531,12 +542,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: WeeklyDatePicker(
-                                    doneDays: completedDays,
+                                    doneDays: [],
                                     notDoneDays: notDoneDays,
                                     selectedDay: get_SelectedDay(),
                                     changeDay: (value) =>
                                         (value) => setState(() {}),
-                                    selectedBackgroundColor: Colors.green,
+                                    // selectedBackgroundColor: Colors.green,
                                     enableWeeknumberText: false,
                                     digitsColor: Colors.black,
                                   ),

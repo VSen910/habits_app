@@ -47,6 +47,8 @@ dependencies:
   firebase_core: ^2.9.0
   flutter_heatmap_calendar: ^1.0.5
   shared_preferences: ^2.1.0
+  ntp: ^2.0.0
+  workmanager: ^0.5.1
 
 dev_dependencies:
   flutter_test:
