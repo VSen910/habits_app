@@ -69,6 +69,10 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
               dataset[newDate] = 2;
             }
 
+            final String activeStreak = snapshot.data!['activeStreak'].toString();
+            final String longestStreak = snapshot.data!['longestStreak'].toString();
+            final String activeDays = snapshot.data!['totalActiveDays'].toString();
+
             // print(dataset.toString());
 
             return CustomScrollView(
@@ -115,30 +119,30 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           },
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
                         child: HabitDetailsCard(
                           boldText: 'Active',
                           secondText: 'streak',
-                          data: '8',
+                          data: activeStreak,
                           textOnLeft: true,
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
                         child: HabitDetailsCard(
                           boldText: 'Longest',
                           secondText: 'streak',
-                          data: '11',
+                          data: longestStreak,
                           textOnLeft: false,
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
                         child: HabitDetailsCard(
                           boldText: 'Active',
                           secondText: 'days',
-                          data: '20',
+                          data: activeDays,
                           textOnLeft: true,
                         ),
                       ),

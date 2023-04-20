@@ -20,8 +20,7 @@ void callbackDispatcher() {
         .collection('habits')
         .where('email', isEqualTo: FirebaseAuth.instance.currentUser!.email!)
         .where('weekdays',
-            arrayContains:
-                DateFormat('EEEE').format(now).toLowerCase())
+            arrayContains: DateFormat('EEEE').format(now).toLowerCase())
         .get();
     for (var docSnapshot in querySnapshot.docs) {
       final data = docSnapshot.data();
@@ -29,11 +28,21 @@ void callbackDispatcher() {
           FirebaseFirestore.instance.collection('habits').doc(docSnapshot.id);
 
       DateTime yesterday = now.subtract(const Duration(days: 1));
-      DateTime add = DateTime(yesterday.year, yesterday.month, yesterday.day);
+      DateTime newDate =
+          DateTime(yesterday.year, yesterday.month, yesterday.day);
       if (data['currentStatus'] == 0) {
-        data['doneDates'].add(add);
+        data['doneDates'].add(newDate);
+        data['totalActiveDays'] += 1;
+        data['activeStreak'] += 1;
+        if (data['longestStreak'] < data['activeStreak']) {
+          data['longestStreak'] = data['activeStreak'];
+        }
       } else {
-        data['notDoneDates'].add(add);
+        if (!data['doneDates'].contains(newDate) &&
+            !data['notDoneDates'].contains(newDate)) {
+          data['notDoneDates'].add(newDate);
+          data['activeStreak'] = 0;
+        }
       }
 
       data['currentStatus'] = 1;
