@@ -62,6 +62,7 @@ class _EditDialogState extends State<EditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text('Edit your habit'),
       content: Column(
         children: [
