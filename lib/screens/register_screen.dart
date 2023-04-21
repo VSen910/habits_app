@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:habits/auth/authFunctions.dart';
@@ -24,6 +25,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? firstName;
   String? email;
   String? password;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if(!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,13 +152,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      final username =
-                          await AuthServices.signUp(firstName!, email!, password!);
+                      final username = await AuthServices.signUp(
+                          firstName!, email!, password!);
                       if (username != null) {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomeScreen(username: username, prefs: widget.prefs,),
+                            builder: (context) => HomeScreen(
+                              username: username,
+                              prefs: widget.prefs,
+                            ),
                           ),
                         );
                       }
@@ -168,7 +183,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LoginScreen(prefs: widget.prefs,),
+                        builder: (context) => LoginScreen(
+                          prefs: widget.prefs,
+                        ),
                       ),
                     );
                   },

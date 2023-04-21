@@ -57,7 +57,7 @@ class AuthServices {
       });
 
       final now = await NTP.now();
-      final midnight = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      final midnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0);
       final timeUntilMidnight = midnight.difference(now);
       var uniqueId = DateTime.now().second.toString();
       await Workmanager().registerPeriodicTask(
