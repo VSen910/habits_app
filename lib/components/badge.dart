@@ -1,57 +1,31 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:habits/constants.dart';
 
-class HabitBadge extends StatefulWidget {
-  const HabitBadge(
-      {Key? key,
-      required this.title,
+class BadgeDetails {
+  BadgeDetails(
+      {required this.title,
       required this.subtitle,
-      required this.badgeIconData,
-      required this.badgeIconColor})
-      : super(key: key);
+      required this.iconData,
+      required this.iconColor});
 
-  final IconData badgeIconData;
-  final Color badgeIconColor;
-  final String title;
-  final String subtitle;
-
-  @override
-  State<HabitBadge> createState() => _HabitBadgeState();
+  String title;
+  String subtitle;
+  IconData iconData;
+  Color iconColor;
 }
 
-class _HabitBadgeState extends State<HabitBadge> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      width: 100,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              height: 100,
-              width: 100,
-              decoration: BoxDecoration(
-                border: Border.all(color: kPrimaryColour),
-                borderRadius: BorderRadius.all(Radius.circular(50)),
-              ),
-              child: Icon(
-                widget.badgeIconData,
-                size: 60,
-                color: widget.badgeIconColor,
-              ),
-            ),
-          ),
-          Text(widget.title),
-          Text(
-            widget.subtitle,
-            style: TextStyle(color: kGreyTextColour),
-          ),
-        ],
-      ),
-    );
-  }
-}
+final List<BadgeDetails> badgeDetails = [
+  BadgeDetails(
+    title: 'New Beginnings',
+    subtitle: 'Start a new habit',
+    iconData: Icons.whatshot,
+    iconColor: Colors.orange,
+  ),
+  BadgeDetails(
+    title: 'Going strong',
+    subtitle: 'Complete 7 active days',
+    iconData: Icons.flash_on,
+    iconColor: Colors.yellow,
+  ),
+];

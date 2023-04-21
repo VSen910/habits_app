@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:habits/components/badge.dart';
 import 'package:habits/screens/home_screen.dart';
 import 'package:habits/screens/register_screen.dart';
 import 'package:habits/screens/splash_screen.dart';
@@ -47,6 +48,11 @@ void callbackDispatcher() {
           data['notDoneDates'].add(yesterday);
           data['activeStreak'] = 0;
         }
+      }
+
+      // Badge handling
+      if(data['totalActiveDays'] == 7) {
+        data['rewards'].add(1);
       }
 
       data['currentStatus'] = 1;

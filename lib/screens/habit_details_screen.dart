@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:habits/components/badge.dart';
+import 'package:habits/components/badge_card.dart';
 import 'package:habits/components/custom_appbar.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:habits/components/edit_habit_card.dart';
@@ -48,7 +49,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
               .doc(widget.habitId)
               .snapshots(),
           builder: (context, snapshot) {
-            if(snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -58,20 +59,23 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
             final List notDoneDates = snapshot.data!['notDoneDates'];
 
             Map<DateTime, int> dataset = {};
-            for(int i=0; i<doneDates.length; i++) {
+            for (int i = 0; i < doneDates.length; i++) {
               DateTime date = doneDates[i].toDate();
               DateTime newDate = DateTime(date.year, date.month, date.day);
               dataset[newDate] = 1;
             }
-            for(int i=0; i<notDoneDates.length; i++) {
+            for (int i = 0; i < notDoneDates.length; i++) {
               DateTime date = notDoneDates[i].toDate();
               DateTime newDate = DateTime(date.year, date.month, date.day);
               dataset[newDate] = 2;
             }
 
-            final String activeStreak = snapshot.data!['activeStreak'].toString();
-            final String longestStreak = snapshot.data!['longestStreak'].toString();
-            final String activeDays = snapshot.data!['totalActiveDays'].toString();
+            final String activeStreak =
+                snapshot.data!['activeStreak'].toString();
+            final String longestStreak =
+                snapshot.data!['longestStreak'].toString();
+            final String activeDays =
+                snapshot.data!['totalActiveDays'].toString();
 
             // print(dataset.toString());
 
@@ -82,16 +86,19 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                   delegate: SliverChildListDelegate(
                     [
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 24.0,
+                        ),
                         child: EditHabitCard(
                           iconData: IconData(
-                            int.parse(
-                              snapshot.data!['icondata'],
-                              radix: 16,
-                            ),
-                            fontFamily: 'MaterialIcons'
-                          ),
-                          iconColor: Color(int.parse(snapshot.data!['iconColor'])),
+                              int.parse(
+                                snapshot.data!['icondata'],
+                                radix: 16,
+                              ),
+                              fontFamily: 'MaterialIcons'),
+                          iconColor:
+                              Color(int.parse(snapshot.data!['iconColor'])),
                           title: snapshot.data!['title'],
                           subtitle: snapshot.data!['subtitle'],
                           habitId: widget.habitId,
@@ -120,7 +127,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: HabitDetailsCard(
                           boldText: 'Active',
                           secondText: 'streak',
@@ -129,7 +136,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: HabitDetailsCard(
                           boldText: 'Longest',
                           secondText: 'streak',
@@ -138,7 +145,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: HabitDetailsCard(
                           boldText: 'Active',
                           secondText: 'days',
@@ -182,25 +189,49 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                     ],
                   ),
                 ),
-                SliverGrid(
+                // SliverGrid(
+                //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount: 2),
+                //   delegate: SliverChildListDelegate(
+                //     [
+                //       const HabitBadge(
+                //         title: 'New Beginnings',
+                //         subtitle: 'Start a new habit',
+                //         badgeIconData: Icons.local_fire_department,
+                //         badgeIconColor: Colors.yellow,
+                //       ),
+                //       const HabitBadge(
+                //         title: 'New Beginnings',
+                //         subtitle: 'Start a new habit',
+                //         badgeIconData: Icons.local_fire_department,
+                //         badgeIconColor: Colors.yellow,
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                SliverGrid.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2),
-                  delegate: SliverChildListDelegate(
-                    [
-                      const HabitBadge(
-                        title: 'New Beginnings',
-                        subtitle: 'Start a new habit',
-                        badgeIconData: Icons.local_fire_department,
-                        badgeIconColor: Colors.yellow,
-                      ),
-                      const HabitBadge(
-                        title: 'New Beginnings',
-                        subtitle: 'Start a new habit',
-                        badgeIconData: Icons.local_fire_department,
-                        badgeIconColor: Colors.yellow,
-                      ),
-                    ],
-                  ),
+                  itemCount: badgeDetails.length,
+                  itemBuilder: (context, index) {
+                    bool hasBadge = snapshot.data!['rewards'].contains(index);
+
+                    return hasBadge
+                        ? HabitBadge(
+                            title: badgeDetails[index].title,
+                            subtitle: badgeDetails[index].subtitle,
+                            badgeIconData: badgeDetails[index].iconData,
+                            badgeIconColor: badgeDetails[index].iconColor,
+                            ringColor: kPrimaryColour,
+                          )
+                        : const HabitBadge(
+                            title: 'Locked',
+                            subtitle: 'Keep working to unlock!',
+                            badgeIconData: Icons.lock,
+                            badgeIconColor: Colors.grey,
+                            ringColor: Colors.grey,
+                          );
+                  },
                 ),
               ],
             );
