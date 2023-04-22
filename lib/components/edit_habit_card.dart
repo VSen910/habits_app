@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habits/components/edit_dialog.dart';
 import 'package:habits/constants.dart';
 
-class EditHabitCard extends StatefulWidget {
+class EditHabitCard extends StatelessWidget {
   const EditHabitCard({Key? key,
     required this.iconData,
     required this.title,
@@ -16,11 +16,6 @@ class EditHabitCard extends StatefulWidget {
   final Color iconColor;
   final String habitId;
 
-  @override
-  State<EditHabitCard> createState() => _EditHabitCardState();
-}
-
-class _EditHabitCardState extends State<EditHabitCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,8 +31,8 @@ class _EditHabitCardState extends State<EditHabitCard> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Icon(
-                widget.iconData,
-                color: widget.iconColor,
+                iconData,
+                color: iconColor,
               ),
             ),
             Padding(
@@ -45,9 +40,9 @@ class _EditHabitCardState extends State<EditHabitCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.title),
+                  Text(title),
                   Text(
-                    widget.subtitle,
+                    subtitle,
                     style: TextStyle(color: kGreyTextColour),
                   ),
                 ],
@@ -60,11 +55,11 @@ class _EditHabitCardState extends State<EditHabitCard> {
                   context: context,
                   builder: (context) =>
                       EditDialog(
-                        habitName: widget.title,
-                        habitDesc: widget.subtitle,
-                        iconColor: widget.iconColor,
-                        iconData: widget.iconData,
-                        habitId: widget.habitId,
+                        habitName: title,
+                        habitDesc: subtitle,
+                        iconColor: iconColor,
+                        iconData: iconData,
+                        habitId: habitId,
                       ),
                 );
               },

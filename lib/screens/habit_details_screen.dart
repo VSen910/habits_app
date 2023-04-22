@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:habits/components/badge.dart';
 import 'package:habits/components/badge_card.dart';
@@ -7,8 +6,10 @@ import 'package:habits/components/custom_appbar.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:habits/components/edit_habit_card.dart';
 import 'package:habits/components/habit_details_card.dart';
+import 'package:habits/components/weekday_select.dart';
 import 'package:habits/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weekday_selector/weekday_selector.dart';
 
 class HabitDetailsScreen extends StatefulWidget {
   const HabitDetailsScreen(
@@ -34,6 +35,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
   //   DateTime(2023, 1, 9): 1,
   //   DateTime(2023, 1, 13): 1,
   // };
+  final weekdays = List.filled(7, false);
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +79,6 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
             final String activeDays =
                 snapshot.data!['totalActiveDays'].toString();
 
-            // print(dataset.toString());
-
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
@@ -103,6 +103,11 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           subtitle: snapshot.data!['subtitle'],
                           habitId: widget.habitId,
                         ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: WeekdaySelect(weekdays: weekdays),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(24.0),
