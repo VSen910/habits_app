@@ -6,6 +6,7 @@ import 'package:habits/components/custom_appbar.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:habits/components/edit_habit_card.dart';
 import 'package:habits/components/habit_details_card.dart';
+import 'package:habits/components/reminder_chips.dart';
 import 'package:habits/components/weekday_select.dart';
 import 'package:habits/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,7 +36,48 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
   //   DateTime(2023, 1, 9): 1,
   //   DateTime(2023, 1, 13): 1,
   // };
-  final weekdays = List.filled(7, false);
+
+  List<bool?> getWeekdaysBool(List weekdays) {
+    List<bool?> res = [];
+
+    if (weekdays.contains('sunday')) {
+      res.add(true);
+    } else {
+      res.add(false);
+    }
+    if (weekdays.contains('monday')) {
+      res.add(true);
+    } else {
+      res.add(false);
+    }
+    if (weekdays.contains('tuesday')) {
+      res.add(true);
+    } else {
+      res.add(false);
+    }
+    if (weekdays.contains('wednesday')) {
+      res.add(true);
+    } else {
+      res.add(false);
+    }
+    if (weekdays.contains('thursday')) {
+      res.add(true);
+    } else {
+      res.add(false);
+    }
+    if (weekdays.contains('friday')) {
+      res.add(true);
+    } else {
+      res.add(false);
+    }
+    if (weekdays.contains('saturday')) {
+      res.add(true);
+    } else {
+      res.add(false);
+    }
+
+    return res;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +121,9 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
             final String activeDays =
                 snapshot.data!['totalActiveDays'].toString();
 
+            final weekdays = snapshot.data!['weekdays'];
+            final weekdaysBool = getWeekdaysBool(weekdays);
+
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
@@ -104,11 +149,14 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           habitId: widget.habitId,
                         ),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.all(24.0),
-                        child: WeekdaySelect(weekdays: weekdays),
+                        child: WeekdaySelect(
+                          weekdays: weekdaysBool,
+                          habitId: widget.habitId,
+                        ),
                       ),
+                      // S
                       Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: HeatMapCalendar(

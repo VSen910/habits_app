@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _formKey.currentState!.save();
                       final username =
                           await AuthServices.signIn(email!, password!);
-                      if (username != null) {
+                      if (username != null && context.mounted) {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
