@@ -19,19 +19,19 @@ class AuthServices {
           .get();
       await prefs.setString('username', userDoc.docs.first.get('name'));
 
-      final now = await NTP.now();
-      final midnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0);
-      final timeUntilMidnight = midnight.difference(now);
-      var uniqueId = DateTime.now().second.toString();
-      await Workmanager().registerPeriodicTask(
-        uniqueId,
-        'reset-status-task',
-        frequency: const Duration(days: 1),
-        initialDelay: timeUntilMidnight,
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-        ),
-      );
+      // final now = await NTP.now();
+      // final midnight = DateTime(now.year, now.month, now.day , 0, 10, 0);
+      // final timeUntilMidnight = midnight.difference(now);
+      // var uniqueId = DateTime.now().second.toString();
+      // await Workmanager().registerPeriodicTask(
+      //   uniqueId,
+      //   'reset-status-task',
+      //   frequency: const Duration(days: 1),
+      //   initialDelay: timeUntilMidnight,
+      //   constraints: Constraints(
+      //     networkType: NetworkType.connected,
+      //   ),
+      // );
       return prefs.getString('username');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' || e.code == 'wrong-password') {
@@ -56,19 +56,19 @@ class AuthServices {
         'rewards': [],
       });
 
-      final now = await NTP.now();
-      final midnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0);
-      final timeUntilMidnight = midnight.difference(now);
-      var uniqueId = DateTime.now().second.toString();
-      await Workmanager().registerPeriodicTask(
-        uniqueId,
-        'reset-status-task',
-        frequency: const Duration(days: 1),
-        initialDelay: timeUntilMidnight,
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-        ),
-      );
+      // final now = await NTP.now();
+      // final midnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0);
+      // final timeUntilMidnight = midnight.difference(now);
+      // var uniqueId = DateTime.now().second.toString();
+      // await Workmanager().registerPeriodicTask(
+      //   uniqueId,
+      //   'reset-status-task',
+      //   frequency: const Duration(days: 1),
+      //   initialDelay: timeUntilMidnight,
+      //   constraints: Constraints(
+      //     networkType: NetworkType.connected,
+      //   ),
+      // );
 
       await prefs.setString('username', name);
       return name;
@@ -85,7 +85,7 @@ class AuthServices {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('username');
 
-      await Workmanager().cancelAll();
+      // await Workmanager().cancelAll();
 
       await FirebaseAuth.instance.signOut();
     } on FirebaseAuthException catch (e) {
