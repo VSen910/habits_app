@@ -10,7 +10,6 @@ import 'package:habits/components/reminder_chips.dart';
 import 'package:habits/components/weekday_select.dart';
 import 'package:habits/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:weekday_selector/weekday_selector.dart';
 
 class HabitDetailsScreen extends StatefulWidget {
   const HabitDetailsScreen(
@@ -29,51 +28,25 @@ class HabitDetailsScreen extends StatefulWidget {
 }
 
 class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
-  // var dataset = {
-  //   DateTime(2023, 1, 6): 1,
-  //   DateTime(2023, 1, 7): 1,
-  //   DateTime(2023, 1, 8): 1,
-  //   DateTime(2023, 1, 9): 1,
-  //   DateTime(2023, 1, 13): 1,
-  // };
 
   List<bool?> getWeekdaysBool(List weekdays) {
+    List days = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday'
+    ];
     List<bool?> res = [];
 
-    if (weekdays.contains('sunday')) {
-      res.add(true);
-    } else {
-      res.add(false);
-    }
-    if (weekdays.contains('monday')) {
-      res.add(true);
-    } else {
-      res.add(false);
-    }
-    if (weekdays.contains('tuesday')) {
-      res.add(true);
-    } else {
-      res.add(false);
-    }
-    if (weekdays.contains('wednesday')) {
-      res.add(true);
-    } else {
-      res.add(false);
-    }
-    if (weekdays.contains('thursday')) {
-      res.add(true);
-    } else {
-      res.add(false);
-    }
-    if (weekdays.contains('friday')) {
-      res.add(true);
-    } else {
-      res.add(false);
-    }
-    if (weekdays.contains('saturday')) {
-      res.add(true);
-    } else {
-      res.add(false);
+    for(int i=0; i<days.length; i++) {
+      if(weekdays.contains(days[i])) {
+        res.add(true);
+      } else {
+        res.add(false);
+      }
     }
 
     return res;
@@ -156,7 +129,6 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           habitId: widget.habitId,
                         ),
                       ),
-                      // S
                       Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: HeatMapCalendar(
@@ -242,26 +214,6 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                     ],
                   ),
                 ),
-                // SliverGrid(
-                //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                //       crossAxisCount: 2),
-                //   delegate: SliverChildListDelegate(
-                //     [
-                //       const HabitBadge(
-                //         title: 'New Beginnings',
-                //         subtitle: 'Start a new habit',
-                //         badgeIconData: Icons.local_fire_department,
-                //         badgeIconColor: Colors.yellow,
-                //       ),
-                //       const HabitBadge(
-                //         title: 'New Beginnings',
-                //         subtitle: 'Start a new habit',
-                //         badgeIconData: Icons.local_fire_department,
-                //         badgeIconColor: Colors.yellow,
-                //       ),
-                //     ],
-                //   ),
-                // ),
                 SliverGrid.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2),
