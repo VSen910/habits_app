@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:habits/auth/authFunctions.dart';
 import 'package:habits/components/drawer_info_tile.dart';
 import 'package:habits/dataHandling/dataHandler.dart';
+import 'package:habits/screens/habit_create_screen.dart';
 import 'package:habits/screens/habit_details_screen.dart';
 import 'package:habits/screens/register_screen.dart';
 import 'package:intl/intl.dart';
@@ -165,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if(!isAllowed) {
+      if (!isAllowed) {
         print(isAllowed);
         AwesomeNotifications().requestPermissionToSendNotifications();
       }
@@ -306,89 +307,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   setState(() {
                                     //Done Icon
                                     if (index == 0) {
-                                      // habits_list[cardIndex][0].status_icon =
-                                      //     0;
                                       habitDoc.update({'currentStatus': 0});
-
-                                      // if (statusFlag == 0) {
-                                      //   habits_list[cardIndex][0]
-                                      //       .completedDays
-                                      //       .add(DateTime.parse(
-                                      //           getTimeInfo()));
-                                      //   statusFlag = 1;
-                                      // } else if (statusFlag == 1) {
-                                      //   if (habits_list[cardIndex][0]
-                                      //       .notDoneDays
-                                      //       .contains(DateTime.parse(
-                                      //           getTimeInfo()))) {
-                                      //     habits_list[cardIndex][0]
-                                      //         .notDoneDays
-                                      //         .remove(DateTime.parse(
-                                      //             getTimeInfo()));
-                                      //   }
-                                      //   habits_list[cardIndex][0]
-                                      //       .completedDays
-                                      //       .add(DateTime.parse(
-                                      //           getTimeInfo()));
-                                      // }
                                     }
 
                                     //Pending Icon
                                     else if (index == 1) {
-                                      // habits_list[cardIndex][0].status_icon =
-                                      //     1;
                                       habitDoc.update({'currentStatus': 1});
-
-                                      // if (statusFlag == 0) {
-                                      //   statusFlag = 1;
-                                      // } else if (statusFlag == 1) {
-                                      //   if (habits_list[cardIndex][0]
-                                      //       .completedDays
-                                      //       .contains(DateTime.parse(
-                                      //           getTimeInfo()))) {
-                                      //     habits_list[cardIndex][0]
-                                      //         .completedDays
-                                      //         .remove(DateTime.parse(
-                                      //             getTimeInfo()));
-                                      //   } else if (habits_list[cardIndex][0]
-                                      //       .notDoneDays
-                                      //       .contains(DateTime.parse(
-                                      //           getTimeInfo()))) {
-                                      //     habits_list[cardIndex][0]
-                                      //         .notDoneDays
-                                      //         .remove(DateTime.parse(
-                                      //             getTimeInfo()));
-                                      //   }
-                                      // }
                                     }
 
                                     //Taken off Icon
                                     else if (index == 2) {
-                                      // habits_list[cardIndex][0].status_icon =
-                                      //     3;
                                       habitDoc.update({'currentStatus': 2});
-
-                                      // if (statusFlag == 0) {
-                                      //   habits_list[cardIndex][0]
-                                      //       .notDoneDays
-                                      //       .add(DateTime.parse(
-                                      //           getTimeInfo()));
-                                      //   statusFlag = 1;
-                                      // } else if (statusFlag == 1) {
-                                      //   if (habits_list[cardIndex][0]
-                                      //       .completedDays
-                                      //       .contains(DateTime.parse(
-                                      //           getTimeInfo()))) {
-                                      //     habits_list[cardIndex][0]
-                                      //         .completedDays
-                                      //         .remove(DateTime.parse(
-                                      //             getTimeInfo()));
-                                      //   }
-                                      //   habits_list[cardIndex][0]
-                                      //       .notDoneDays
-                                      //       .add(DateTime.parse(
-                                      //           getTimeInfo()));
-                                      // }
                                     }
                                   });
                                   statusIconController.closeMenu!();
@@ -514,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
-                      separatorBuilder: (BuildContext context, int index) {
+                      separatorBuilder: (context, index) {
                         return Container(
                           padding: EdgeInsets.all(4),
                         );
@@ -560,10 +489,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: ExpansionTile(
                               textColor: Colors.black,
-                              iconColor: Color(int.parse(snapshot
-                                  .data!.docs[cardIndex2]['iconColor'])),
-                              collapsedIconColor: Color(int.parse(snapshot
-                                  .data!.docs[cardIndex2]['iconColor'])),
+                              iconColor: kPrimaryColour,
                               shape: RoundedRectangleBorder(
                                   side: BorderSide(
                                     width: 2,
@@ -576,13 +502,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Icon(
                                   IconData(
                                     int.parse(
-                                      snapshot.data!.docs[cardIndex2]
-                                          ['icondata'],
-                                      radix: 16,
-                                    ),
+                                        snapshot.data!.docs[cardIndex2]
+                                        ['icondata'],
+                                        radix: 16),
                                     fontFamily: 'MaterialIcons',
                                   ),
                                   size: 28,
+                                  color: Color(int.parse(snapshot
+                                      .data!.docs[cardIndex2]['iconColor'])),
                                 ),
                               ),
                               title: Text(
@@ -659,7 +586,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: kPrimaryColour,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HabitCreateScreen(),
+            ),
+          );
+        },
         child: Icon(
           Icons.add,
         ),
