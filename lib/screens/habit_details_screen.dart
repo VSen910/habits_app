@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:habits/components/badge.dart';
 import 'package:habits/components/badge_card.dart';
 import 'package:habits/components/custom_appbar.dart';
@@ -28,7 +29,6 @@ class HabitDetailsScreen extends StatefulWidget {
 }
 
 class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
-
   List<bool?> getWeekdaysBool(List weekdays) {
     List days = [
       'sunday',
@@ -41,8 +41,8 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     ];
     List<bool?> res = [];
 
-    for(int i=0; i<days.length; i++) {
-      if(weekdays.contains(days[i])) {
+    for (int i = 0; i < days.length; i++) {
+      if (weekdays.contains(days[i])) {
         res.add(true);
       } else {
         res.add(false);
@@ -71,6 +71,10 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                 child: CircularProgressIndicator(),
               );
             }
+
+            final docRef = FirebaseFirestore.instance
+                .collection('habits')
+                .doc(snapshot.data!.id);
 
             final List doneDates = snapshot.data!['doneDates'];
             final List notDoneDates = snapshot.data!['notDoneDates'];
@@ -238,6 +242,81 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           );
                   },
                 ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            elevation: 0,
+                            minimumSize: Size(double.infinity, 60),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(
+                                color: Colors.red,
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Delete habit'),
+                                  content: Text(
+                                      'Are you sure you want to delete this habit?'
+                                      '\n\n'
+                                      'You will lose all your progress permanently'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                        await docRef.delete();
+                                        Fluttertoast.showToast(
+                                            msg: 'Habit deleted successfully');
+                                      },
+                                      child: Text('Delete'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              'Delete habit',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ],
             );
           },
