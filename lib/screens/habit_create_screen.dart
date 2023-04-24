@@ -466,6 +466,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                               padding: const EdgeInsets.all(16.0),
                               child: ReminderChips(
                                 reminders: reminders,
+                                isEdit: false,
                               ),
                             ),
                           const SizedBox(height: 20),
@@ -562,6 +563,15 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                         '0x${iconColor.value.toRadixString(16).padLeft(8, '0')}',
                                     'icondata':
                                         iconData.codePoint.toRadixString(16),
+                                    'reminders': reminders.map(
+                                          (time) => DateTime(
+                                        DateTime.now().year,
+                                        DateTime.now().month,
+                                        DateTime.now().day,
+                                        time.hour,
+                                        time.minute,
+                                      ),
+                                    ),
                                     'weekdays': _getWeekdays(weekdaysBool),
                                     'rewards': [0],
                                     'doneDates': [],
@@ -572,17 +582,9 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                     'currentStatus': 1,
                                   };
                                   if (hasReminders) {
-                                    habit['reminders'] = reminders.map(
-                                      (time) => DateTime(
-                                        DateTime.now().year,
-                                        DateTime.now().month,
-                                        DateTime.now().day,
-                                        time.hour,
-                                        time.minute,
-                                      ),
-                                    );
+                                    habit['hasReminders'] = true;
                                   } else {
-                                    habit['reminders'] = [];
+                                    habit['hasReminders'] = false;
                                   }
 
                                   await FirebaseFirestore.instance

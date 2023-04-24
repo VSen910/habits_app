@@ -6,6 +6,7 @@ import 'package:habits/components/badge_card.dart';
 import 'package:habits/components/custom_appbar.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:habits/components/edit_habit_card.dart';
+import 'package:habits/components/edit_reminders.dart';
 import 'package:habits/components/habit_details_card.dart';
 import 'package:habits/components/reminder_chips.dart';
 import 'package:habits/components/weekday_select.dart';
@@ -29,6 +30,8 @@ class HabitDetailsScreen extends StatefulWidget {
 }
 
 class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
+  bool hasReminders = true;
+
   List<bool?> getWeekdaysBool(List weekdays) {
     List days = [
       'sunday',
@@ -49,6 +52,15 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
       }
     }
 
+    return res;
+  }
+
+  List<TimeOfDay> getReminders(List reminders) {
+    List<TimeOfDay> res = [];
+    for (int i = 0; i < reminders.length; i++) {
+      DateTime dateTime = reminders[i].toDate();
+      res.add(TimeOfDay(hour: dateTime.hour, minute: dateTime.minute));
+    }
     return res;
   }
 
@@ -101,6 +113,10 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
             final weekdays = snapshot.data!['weekdays'];
             final weekdaysBool = getWeekdaysBool(weekdays);
 
+            List<TimeOfDay> reminders =
+                getReminders(snapshot.data!['reminders']);
+            if (reminders.isEmpty) hasReminders = false;
+
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
@@ -131,6 +147,13 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                         child: WeekdaySelect(
                           weekdays: weekdaysBool,
                           habitId: widget.habitId,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: EditReminders(
+                          habitId: widget.habitId,
+                          reminders: reminders,
                         ),
                       ),
                       Padding(
