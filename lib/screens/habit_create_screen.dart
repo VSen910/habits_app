@@ -1,21 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:habits/components/custom_appbar.dart';
-import 'package:habits/components/habit_class.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
-import 'package:flutter_iconpicker/Models/IconPack.dart';
 import 'package:habits/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weekday_selector/weekday_selector.dart';
-import 'package:intl/intl.dart';
 
 import '../components/reminder_chips.dart';
 
 class HabitCreateScreen extends StatefulWidget {
-  const HabitCreateScreen({Key? key}) : super(key: key);
+  const HabitCreateScreen({Key? key, required this.prefs}) : super(key: key);
+
+  final SharedPreferences prefs;
 
   @override
   State<HabitCreateScreen> createState() => _HabitCreateScreenState();
@@ -33,43 +32,6 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
     tabController = TabController(length: 2, vsync: this);
   }
 
-  final Map<String, IconData> myIconCollection = {
-    'favorite': Icons.favorite,
-    'home': Icons.home,
-    'album': Icons.album,
-    'ac_unit': Icons.ac_unit,
-    //  'six__ft_apart': Icons.six_ft_apart,
-  };
-
-  // final PageController _controller = PageController();
-  //
-  // void _showIconPickerDialog(BuildContext context) async {
-  //   IconData? selectedIcon = await FlutterIconPicker.showIconPicker(
-  //     context,
-  //     iconPickerShape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.circular(10),
-  //     ),
-  //     //iconPackModes: IconPack.material,
-  //     iconPackModes: [IconPack.material, IconPack.material, IconPack.cupertino],
-  //   );
-  //
-  //   // Do something with the selected icon, such as updating your state or saving it to a database
-  // }
-
-  late List<List<HabitDetails>> habits_list = [
-    [
-      HabitDetails('Sleep early', 'Choose the time to go to bed', 1,
-          Icons.bedtime, [], [])
-    ],
-    [
-      HabitDetails('Go for a walk', 'Choose the time to g to walk', 1,
-          Icons.directions_walk, [], [])
-    ],
-    [
-      HabitDetails('Meditation', 'Choose the time for meditation', 1,
-          Icons.directions_walk, [], [])
-    ]
-  ];
   List<bool?> weekdaysBool = List.filled(7, false);
 
   printIntAsDay(int day) {
@@ -88,28 +50,6 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
     throw '🐞 This should never have happened: $day';
   }
 
-  //timepicker
-  final TextEditingController _timeController = TextEditingController();
-
-  // Future<void> _selectTime(BuildContext context) async {
-  //   final TimeOfDay? picked = await showTimePicker(
-  //     context: context,
-  //     initialTime: TimeOfDay.now(),
-  //   );
-  //   if (picked != null) {
-  //     setState(() {
-  //       _timeController.text = DateFormat.Hm().format(
-  //         DateTime(
-  //           2023, // any year
-  //           1, // any month
-  //           1, // any day
-  //           picked.hour,
-  //           picked.minute,
-  //         ),
-  //       );
-  //     });
-  //   }
-  // }
   final titleController = TextEditingController();
   final subtitleController = TextEditingController();
 
@@ -117,7 +57,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
   String? subtitle;
 
   bool hasReminders = true;
-  List<TimeOfDay> reminders = [TimeOfDay(hour: 7, minute: 0)];
+  List<TimeOfDay> reminders = [const TimeOfDay(hour: 7, minute: 0)];
 
   IconData iconData = Icons.brightness_1;
   Color iconColor = Colors.grey;
@@ -166,7 +106,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         titleText: 'Create\nHabit',
         hasLeading: true,
       ),
@@ -230,28 +170,28 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
+                        return const Center(
                           child: CircularProgressIndicator(),
                         );
                       } else if (!snapshot.hasData ||
                           snapshot.data!.docs.isEmpty) {
-                        return Center(
+                        return const Center(
                           child: Text('Nothing to show'),
                         );
                       }
 
                       return ListView.separated(
                         shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         itemCount: snapshot.data!.size,
                         separatorBuilder: (context, index) {
                           return Container(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                           );
                         },
                         itemBuilder: (context, cardIndex2) {
                           return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.rectangle,
@@ -270,20 +210,18 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                       iconData = IconData(
                                         int.parse(
                                             snapshot.data!.docs[cardIndex2]
-                                            ['icondata'],
+                                                ['icondata'],
                                             radix: 16),
                                         fontFamily: 'MaterialIcons',
                                       );
-                                      iconColor = Color(int.parse(snapshot
-                                          .data!.docs[cardIndex2]['iconColor']));
+                                      iconColor = Color(int.parse(snapshot.data!
+                                          .docs[cardIndex2]['iconColor']));
                                     });
                                     reminders[0] = pickedTime;
                                     titleController.text = snapshot
                                         .data!.docs[cardIndex2]['title'];
-                                    subtitleController.text = '${
-                                      snapshot.data!.docs[cardIndex2]
-                                          ['description']
-                                    } ${pickedTime.format(context)}';
+                                    subtitleController.text =
+                                        '${snapshot.data!.docs[cardIndex2]['description']} ${pickedTime.format(context)}';
                                     tabController!.animateTo(1);
                                   }
                                 },
@@ -291,7 +229,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                 iconColor: Color(int.parse(snapshot
                                     .data!.docs[cardIndex2]['iconColor'])),
                                 leading: Container(
-                                  margin: EdgeInsets.only(left: 8),
+                                  margin: const EdgeInsets.only(left: 8),
                                   height: double.infinity,
                                   child: Icon(
                                     IconData(
@@ -316,7 +254,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                     },
                   ),
                   SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -365,7 +303,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                               },
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           const Padding(
@@ -411,12 +349,12 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                               },
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
-                          Padding(
+                          const Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 24.0),
+                                EdgeInsets.symmetric(horizontal: 24.0),
                             child: Text(
                               'Pick days for your habit',
                               style: TextStyle(fontSize: 16),
@@ -437,7 +375,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                               selectedElevation: 0,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           Padding(
@@ -446,7 +384,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   'Enable reminders',
                                   style: TextStyle(fontSize: 16),
                                 ),
@@ -479,7 +417,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                   children: [
                                     TextButton(
                                       onPressed: _pickIcon,
-                                      child: Text(
+                                      child: const Text(
                                         'Pick an icon',
                                         style: TextStyle(
                                           color: kPrimaryColour,
@@ -492,7 +430,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                         showDialog(
                                           context: context,
                                           builder: (context) => AlertDialog(
-                                            title: Text('Pick a color'),
+                                            title: const Text('Pick a color'),
                                             content: buildColorPicker(),
                                             actions: [
                                               ElevatedButton(
@@ -504,13 +442,13 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                 },
-                                                child: Text('Select'),
+                                                child: const Text('Select'),
                                               ),
                                             ],
                                           ),
                                         );
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         'Pick a color',
                                         style: TextStyle(
                                           color: kPrimaryColour,
@@ -537,7 +475,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: kPrimaryColour,
                                 elevation: 0,
-                                minimumSize: Size(double.infinity, 60),
+                                minimumSize: const Size(double.infinity, 60),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -546,10 +484,14 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
 
-                                  for(int i=0; i<weekdaysBool.length; i++) {
-                                    if(weekdaysBool[i]!) break;
-                                    if(i == weekdaysBool.length - 1) {
-                                      Fluttertoast.showToast(msg: 'Select weekdays to track your habit');
+                                  for (int i = 0;
+                                      i < weekdaysBool.length;
+                                      i++) {
+                                    if (weekdaysBool[i]!) break;
+                                    if (i == weekdaysBool.length - 1) {
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              'Select weekdays to track your habit');
                                       return;
                                     }
                                   }
@@ -564,7 +506,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                     'icondata':
                                         iconData.codePoint.toRadixString(16),
                                     'reminders': reminders.map(
-                                          (time) => DateTime(
+                                      (time) => DateTime(
                                         DateTime.now().year,
                                         DateTime.now().month,
                                         DateTime.now().day,
@@ -579,6 +521,7 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                     'activeStreak': 0,
                                     'longestStreak': 0,
                                     'totalActiveDays': 0,
+                                    'totalDays': 0,
                                     'currentStatus': 1,
                                   };
                                   if (hasReminders) {
@@ -587,14 +530,42 @@ class _HabitCreateScreenState extends State<HabitCreateScreen>
                                     habit['hasReminders'] = false;
                                   }
 
-                                  await FirebaseFirestore.instance
+                                  await FirebaseFirestore
+                                      .instance
                                       .collection('habits')
                                       .add(habit);
+                                  //
+                                  // int notifId = widget.prefs.getInt('notifId')!;
+                                  // if(hasReminders) {
+                                  //   for (TimeOfDay time in reminders) {
+                                  //     print('${time.minute} ${time.hour} ? * TUE');
+                                  //     await AwesomeNotifications()
+                                  //         .createNotification(
+                                  //       content: NotificationContent(
+                                  //         id: notifId++,
+                                  //         channelKey: 'basic_channel',
+                                  //         groupKey: docRef.id,
+                                  //         title: title,
+                                  //         body: subtitle,
+                                  //         wakeUpScreen: true,
+                                  //         category: NotificationCategory.Reminder,
+                                  //         notificationLayout:
+                                  //         NotificationLayout.Default,
+                                  //       ),
+                                  //       schedule: NotificationCalendar(
+                                  //
+                                  //       )
+                                  //     );
+                                  //   }
+                                  // }
+                                  //
+                                  // await widget.prefs.setInt('notifId', notifId);
+
                                   Navigator.pop(context);
                                 }
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
+                              child: const Padding(
+                                padding: EdgeInsets.all(16.0),
                                 child: Text(
                                   'Create habit',
                                   style: TextStyle(

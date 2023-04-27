@@ -1,6 +1,5 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:habits/auth/authFunctions.dart';
+import 'package:habits/auth/auth_functions.dart';
 import 'package:habits/components/custom_appbar.dart';
 import 'package:habits/components/custom_textformfield.dart';
 import 'package:habits/screens/home_screen.dart';
@@ -27,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -60,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const Padding(
                 padding: EdgeInsets.only(left: 32.0, right: 48),
                 child: Text(
-                  'Resume your journey in building better habits',
+                  'Resume your journey',
                   style: TextStyle(color: kGreyTextColour, fontSize: 16),
                 ),
               ),

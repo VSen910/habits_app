@@ -1,10 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:habits/auth/authFunctions.dart';
+import 'package:habits/auth/auth_functions.dart';
 import 'package:habits/components/drawer_info_tile.dart';
-import 'package:habits/dataHandling/dataHandler.dart';
 import 'package:habits/screens/habit_create_screen.dart';
 import 'package:habits/screens/habit_details_screen.dart';
 import 'package:habits/screens/register_screen.dart';
@@ -14,7 +12,6 @@ import 'package:star_menu/star_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
 import '../components/custom_appbar.dart';
-import '../components/habit_class.dart';
 import '../components/habit_status_icons.dart';
 import '../constants.dart';
 
@@ -34,59 +31,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String userEmail = FirebaseAuth.instance.currentUser!.email!;
 
-  late List<List<HabitDetails>> habits_list = [
-    [
-      HabitDetails(
-          'Go for a walk',
-          'Go to park at 8:00 AM',
-          1,
-          Icons.directions_walk,
-          [DateTime(2023, 4, 10), DateTime(2023, 4, 12)],
-          [DateTime(2023, 4, 11), DateTime(2023, 4, 9)])
-    ],
-    [
-      HabitDetails(
-          'Go for a walk',
-          'Go to park at 8:00 AM',
-          1,
-          Icons.directions_walk,
-          [DateTime(2023, 4, 10), DateTime(2023, 4, 11)],
-          [DateTime(2023, 4, 12), DateTime(2023, 4, 9)])
-    ],
-    [
-      HabitDetails(
-          'Go for a walk',
-          'Go to park at 8:00 AM',
-          1,
-          Icons.directions_walk,
-          [DateTime(2023, 4, 11), DateTime(2023, 4, 9)],
-          [DateTime(2023, 4, 10), DateTime(2023, 4, 12)])
-    ]
-  ];
   int statusFlag = 0;
   List<Widget> status = [
-    Container(
+    SizedBox(
       width: 160,
       child: Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 30,
           ),
-          Text(
+          const Text(
             'Done',
             style: TextStyle(color: Colors.white70),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           DoneIcon(onPressed: () {}),
         ],
       ),
     ),
-    Container(
+    SizedBox(
       width: 160,
       child: Row(
-        children: [
+        children: const [
           SizedBox(
             width: 13,
           ),
@@ -101,10 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     ),
-    Container(
+    SizedBox(
       width: 160,
       child: Row(
-        children: [
+        children: const [
           SizedBox(
             width: 5,
           ),
@@ -121,32 +89,21 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   ];
 
-  //
-  List<DateTime> completedDays = [DateTime(2023, 4, 14), DateTime(2023, 4, 13)];
-  List<DateTime> notDoneDays = [DateTime(2023, 4, 15), DateTime(2023, 4, 16)];
-
-  // @override
-  // void dispose() {
-  //   // TODO: implement dispose
-  //   statusIconController.dispose();
-  //   super.dispose();
-  // }
-
   String getTimeInfo() {
     DateTime currentTime = DateTime.now();
     String month = currentTime.month >= 10
         ? currentTime.month.toString()
-        : "0" + currentTime.month.toString();
+        : "0${currentTime.month}";
     String day = currentTime.day < 10
-        ? "0" + currentTime.day.toString()
+        ? "0${currentTime.day}"
         : currentTime.day.toString();
-    String formate1 = "${currentTime.year}-${month}-${day} 00:00:00";
+    String formate1 = "${currentTime.year}-$month-$day 00:00:00";
     return formate1;
   }
 
-  DateTime get_SelectedDay() {
-    DateTime _selectedDay = DateTime.parse(getTimeInfo());
-    return _selectedDay;
+  DateTime getSelectedDay() {
+    DateTime selectedDay = DateTime.parse(getTimeInfo());
+    return selectedDay;
   }
 
   // String? username;
@@ -186,13 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: screenHeight * 0.05),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8),
                   child: Text(
                     'Today',
                     style: TextStyle(fontSize: 22),
@@ -211,23 +168,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
+                      return const Center(
                         child: CircularProgressIndicator(),
                       );
                     } else if (!snapshot.hasData ||
                         snapshot.data!.docs.isEmpty) {
-                      return Center(
+                      return const Center(
                         child: Text('Nothing to show'),
                       );
                     }
 
                     return ListView.separated(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
                       separatorBuilder: (context, index) {
                         return Container(
-                          padding: EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(4),
                         );
                       },
                       itemBuilder: (context, cardIndex) {
@@ -261,11 +218,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ExpansionTile(
                             textColor: Colors.black,
                             shape: RoundedRectangleBorder(
-                              side: BorderSide(width: 2, color: Colors.black12),
+                              side: const BorderSide(
+                                  width: 1, color: kPrimaryColour),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             leading: Container(
-                              margin: EdgeInsets.only(left: 8),
+                              margin: const EdgeInsets.only(left: 8),
                               height: double.infinity,
                               child: Icon(
                                 IconData(
@@ -323,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   statusIconController.closeMenu!();
                                   statusIconController.dispose();
                                 },
-                                params: StarMenuParameters(
+                                params: const StarMenuParameters(
                                   backgroundParams: BackgroundParams(
                                       sigmaX: 3,
                                       sigmaY: 3,
@@ -345,8 +303,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     : (snapshot.data!.docs[cardIndex]
                                                 ['currentStatus'] ==
                                             1)
-                                        ? PendingIcon()
-                                        : NotDoneIcon(),
+                                        ? const PendingIcon()
+                                        : const NotDoneIcon(),
                               );
                             }),
                             children: [
@@ -356,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   key: UniqueKey(),
                                   doneDays: doneDates,
                                   notDoneDays: notDoneDates,
-                                  selectedDay: get_SelectedDay(),
+                                  selectedDay: getSelectedDay(),
                                   changeDay: (value) =>
                                       (value) => setState(() {}),
                                   enableWeeknumberText: false,
@@ -429,23 +387,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
+                      return const Center(
                         child: CircularProgressIndicator(),
                       );
                     } else if (!snapshot.hasData ||
                         snapshot.data!.docs.isEmpty) {
-                      return Center(
+                      return const Center(
                         child: Text('Nothing to show'),
                       );
                     }
 
                     return ListView.separated(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
                       separatorBuilder: (context, index) {
                         return Container(
-                          padding: EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(4),
                         );
                       },
                       itemBuilder: (context, cardIndex2) {
@@ -480,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         return Padding(
-                          padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.rectangle,
@@ -491,19 +449,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               textColor: Colors.black,
                               iconColor: kPrimaryColour,
                               shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                    width: 2,
-                                    color: Colors.black12,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10)),
+                                side: const BorderSide(
+                                  width: 1,
+                                  color: kPrimaryColour,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                               leading: Container(
-                                margin: EdgeInsets.only(left: 8),
+                                margin: const EdgeInsets.only(left: 8),
                                 height: double.infinity,
                                 child: Icon(
                                   IconData(
                                     int.parse(
                                         snapshot.data!.docs[cardIndex2]
-                                        ['icondata'],
+                                            ['icondata'],
                                         radix: 16),
                                     fontFamily: 'MaterialIcons',
                                   ),
@@ -522,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: WeeklyDatePicker(
                                     doneDays: doneDates,
                                     notDoneDays: notDoneDates,
-                                    selectedDay: get_SelectedDay(),
+                                    selectedDay: getSelectedDay(),
                                     changeDay: (value) =>
                                         (value) => setState(() {}),
                                     // selectedBackgroundColor: Colors.green,
@@ -590,17 +549,19 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => HabitCreateScreen(),
+              builder: (context) => HabitCreateScreen(
+                prefs: widget.prefs,
+              ),
             ),
           );
         },
-        child: Icon(
+        child: const Icon(
           Icons.add,
         ),
       ),
       drawer: Drawer(
         backgroundColor: kPrimaryColour,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(20),
             bottomRight: Radius.circular(20),
@@ -612,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: Column(
-                  children: [
+                  children: const [
                     Text(
                       'habits',
                       style: TextStyle(
@@ -622,7 +583,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Text(
-                      'Build better habits',
+                      'Make habits stick',
                       style: TextStyle(
                         fontSize: 16,
                         color: Color(0xff3f3f3f),
@@ -643,7 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: 'Username',
                     value: widget.prefs.getString('username')!,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   DrawerInfoTile(
@@ -663,7 +624,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(width: 1, color: kPrimaryColour),
+                            side: const BorderSide(width: 1, color: kPrimaryColour),
                           ),
                         ),
                         onPressed: () async {
@@ -678,8 +639,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                           // Navigator.pop(context);
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
                             vertical: 12.0,
                             horizontal: 24.0,
                           ),
@@ -694,7 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 200,
                   ),
                 ],

@@ -14,17 +14,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(
-        channelKey: 'basic_channel',
-        channelName: 'Reminders',
-        channelDescription: 'Notification channel for reminders',
-      ),
-    ],
-    debug: true,
-  );
+  // AwesomeNotifications().initialize(
+  //   null,
+  //   [
+  //     NotificationChannel(
+  //       channelKey: 'basic_channel',
+  //       channelName: 'Reminders',
+  //       channelDescription: 'Notification channel for reminders',
+  //       importance: NotificationImportance.High,
+  //     ),
+  //   ],
+  //   debug: true,
+  // );
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -33,6 +34,7 @@ void main() async {
   );
 
   final prefs = await SharedPreferences.getInstance();
+  // await prefs.setInt('notifId', 0);
 
   runApp(
     MaterialApp(

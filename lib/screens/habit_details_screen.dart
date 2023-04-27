@@ -1,3 +1,4 @@
+// import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,7 +9,6 @@ import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:habits/components/edit_habit_card.dart';
 import 'package:habits/components/edit_reminders.dart';
 import 'package:habits/components/habit_details_card.dart';
-import 'package:habits/components/reminder_chips.dart';
 import 'package:habits/components/weekday_select.dart';
 import 'package:habits/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -205,22 +205,27 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           textOnLeft: true,
                         ),
                       ),
+                      if(snapshot.data!['totalDays'] != 0)
                       Padding(
                         padding: const EdgeInsets.all(24.0),
                         child: RichText(
-                          text: const TextSpan(
-                            style: TextStyle(
+                          text: TextSpan(
+                            style: const TextStyle(
                               fontSize: 20,
                               color: Colors.black,
                             ),
                             children: [
-                              TextSpan(
+                              const TextSpan(
                                   text: 'You have maintained your habit for '),
                               TextSpan(
-                                text: '83.3% ',
-                                style: TextStyle(color: kPrimaryColour),
+                                text: '${
+                                  ((snapshot.data!['totalActiveDays'] /
+                                          snapshot.data!['totalDays']) *
+                                      100).toStringAsFixed(2)
+                                }% ',
+                                style: const TextStyle(color: kPrimaryColour),
                               ),
-                              TextSpan(text: 'of the total days'),
+                              const TextSpan(text: 'of the total days'),
                             ],
                           ),
                         ),
@@ -256,9 +261,9 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                             badgeIconColor: badgeDetails[index].iconColor,
                             ringColor: kPrimaryColour,
                           )
-                        : const HabitBadge(
+                        : HabitBadge(
                             title: 'Locked',
-                            subtitle: 'Keep working to unlock!',
+                            subtitle: badgeDetails[index].subtitle,
                             badgeIconData: Icons.lock,
                             badgeIconColor: Colors.grey,
                             ringColor: Colors.grey,
@@ -274,10 +279,10 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             elevation: 0,
-                            minimumSize: Size(double.infinity, 60),
+                            minimumSize: const Size(double.infinity, 60),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(
+                              side: const BorderSide(
                                 color: Colors.red,
                                 width: 1,
                               ),
@@ -288,17 +293,17 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('Delete habit'),
-                                  content: Text(
+                                  title: const Text('Delete habit'),
+                                  content: const Text(
                                       'Are you sure you want to delete this habit?'
                                       '\n\n'
-                                      'You will lose all your progress permanently'),
+                                      'You will permanently lose all your progress'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         'Cancel',
                                         style: TextStyle(color: Colors.black),
                                       ),
@@ -314,19 +319,20 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                                       onPressed: () async {
                                         Navigator.of(context).pop();
                                         Navigator.of(context).pop();
+                                        // await AwesomeNotifications().cancelNotificationsByGroupKey(docRef.id);
                                         await docRef.delete();
                                         Fluttertoast.showToast(
                                             msg: 'Habit deleted successfully');
                                       },
-                                      child: Text('Delete'),
+                                      child: const Text('Delete'),
                                     ),
                                   ],
                                 );
                               },
                             );
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
                             child: Text(
                               'Delete habit',
                               style: TextStyle(

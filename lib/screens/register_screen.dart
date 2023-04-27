@@ -1,7 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:habits/auth/authFunctions.dart';
+import 'package:habits/auth/auth_functions.dart';
 import 'package:habits/components/custom_textformfield.dart';
 import 'package:habits/constants.dart';
 import 'package:habits/screens/home_screen.dart';

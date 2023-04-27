@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:habits/components/reminder_chips.dart';
+import 'package:habits/constants.dart';
 
 class EditReminders extends StatefulWidget {
   const EditReminders(
@@ -46,6 +47,7 @@ class _EditRemindersState extends State<EditReminders> {
                     ),
                     Switch(
                       value: hasReminders,
+                      activeColor: kPrimaryColour,
                       onChanged: (val) {
                         final docRef = FirebaseFirestore.instance
                             .collection('habits')
